@@ -3,7 +3,7 @@
  const showDm=$('#nero-show-dms'),showMembers=$('#nero-show-members'),hideDm=$('#nero-hide-dms'),hideMembers=$('#nero-hide-members');
  const dmSplit=$('#nero-dm-splitter'),memberSplit=$('#global-chat-splitter');
  if(!layout||!dm||!members||!room)return;
- const keys={dm:'nero.chat.privatePanelVisible.v1',members:'nero.chat.membersVisible.v1',width:'nero.chat.privatePanelWidth.v1'};
+ const keys={dm:'nero.chat.privatePanelVisible.v1',members:'nero.chat.membersVisible.v2',width:'nero.chat.privatePanelWidth.v1'};
  const read=(k,d)=>{try{const v=localStorage.getItem(k);return v===null?d:v==='true'}catch(e){return d}};
  let authenticated=!!window.NERO_AUTH?.user;
  function setVisible(which,on,save=true){
