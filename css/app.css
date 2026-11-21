@@ -9949,3 +9949,12 @@ nav button[data-v="chat"]{position:relative}
 #chat-view .global-chat-edit-form textarea{flex:1 1 100%;min-width:0;min-height:52px;padding:8px;border:1px solid var(--chat-line);border-radius:8px;background:var(--chat-bg);color:var(--chat-text);font:inherit;font-size:13px;resize:vertical}
 #chat-view .global-chat-edit-form button{padding:5px 10px;border:1px solid var(--chat-line);border-radius:7px;background:var(--chat-panel);color:var(--chat-text);font-size:11px;cursor:pointer}
 #chat-view .global-chat-edit-form button[type=submit]{background:var(--chat-accent);color:#fff;border-color:var(--chat-accent)}
+
+/* Keep message edit/delete actions tucked away until hover or keyboard focus. */
+#chat-view .global-chat-message-actions button.danger,
+#chat-view .global-chat-message-actions button:not([aria-label="Add reaction"]) { opacity:0; pointer-events:none; transition:opacity .14s ease; }
+#chat-view .global-chat-message:hover .global-chat-message-actions button.danger,
+#chat-view .global-chat-message:hover .global-chat-message-actions button:not([aria-label="Add reaction"]),
+#chat-view .global-chat-message:focus-within .global-chat-message-actions button.danger,
+#chat-view .global-chat-message:focus-within .global-chat-message-actions button:not([aria-label="Add reaction"]) { opacity:1; pointer-events:auto; }
+@media (hover:none) { #chat-view .global-chat-message-actions button.danger, #chat-view .global-chat-message-actions button:not([aria-label="Add reaction"]) { opacity:1; pointer-events:auto; } }
