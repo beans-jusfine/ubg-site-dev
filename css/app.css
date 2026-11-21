@@ -10188,3 +10188,9 @@ body.global-chat-resizing{cursor:col-resize!important;user-select:none!important
   .global-chat-image-viewer:not([hidden]),
   .global-chat-image-viewer:not([hidden]) img { animation:none!important;transition:none!important }
 }
+
+
+/* Owner badge shown beside the owner in messages, profiles, and member list. */
+.nero-owner-badge{display:inline-flex;align-items:center;gap:3px;margin-left:6px;padding:2px 6px;border:1px solid color-mix(in srgb,#d6a84b 55%,transparent);border-radius:999px;background:color-mix(in srgb,#d6a84b 15%,transparent);color:#d6a84b;font-size:9px;font-weight:800;line-height:1.35;letter-spacing:.045em;vertical-align:middle;white-space:nowrap}
+#chat-view .global-chat-member-details .nero-owner-badge{margin-left:5px;font-size:8px;padding:1px 5px}
+.global-chat-public-profile .nero-owner-badge{margin-left:0}
