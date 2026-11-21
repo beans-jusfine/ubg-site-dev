@@ -12,12 +12,19 @@
   async function loadProfiles(){const {data,error}=await client.from('profiles').select('id,username,display_name,avatar_path').order('username');if(error)throw error;profileCache=new Map((data||[]).map(p=>[p.id,p]))}
   async function ensureConversation(otherId){
     if(!user?.id||!otherId||otherId===user.id)throw new Error('Choose another NERO member.');
-    const pair=[String(user.id),String(otherId)].sort(),payload={user_one:pair[0],user_two:pair[1],created_by:user.id};
-    const made=await client.from('dm_conversations').insert(payload).select('id,user_one,user_two,created_at').maybeSingle();
+    const pair=[String(user.id),String(otherId)].sort();
+    const findExisting=()=>client.from('dm_conversations').select('id,user_one,user_two,created_at').eq('user_one',pair[0]).eq('user_two',pair[1]).maybeSingle();
+    const existing=await findExisting();
+    if(existing.error)throw existing.error;
+    if(existing.data)return existing.data;
+    const made=await client.from('dm_conversations').insert({user_one:pair[0],user_two:pair[1],created_by:user.id}).select('id,user_one,user_two,created_at').single();
     if(!made.error&&made.data)return made.data;
-    if(made.error?.code!=='23505')throw made.error;
-    const found=await client.from('dm_conversations').select('id,user_one,user_two,created_at').eq('user_one',pair[0]).eq('user_two',pair[1]).single();
-    if(found.error)throw found.error;return found.data;
+    // Another tab or participant may create the same pair between the lookup and insert.
+    if(made.error?.code!=='23505'&&made.status!==409)throw made.error;
+    const raced=await findExisting();
+    if(raced.error)throw raced.error;
+    if(raced.data)return raced.data;
+    throw made.error||new Error('Could not create this conversation.');
   }
   function renderConversationList(latest){
     list.replaceChildren();
