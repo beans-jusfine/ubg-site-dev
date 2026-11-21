@@ -3,6 +3,75 @@
   const seen=new Set(),online=new Map(),typingUsers=new Map(),typingTimers=new Map();let client=window.NERO_SUPABASE,channel=null,joined=false,user=null,profile=null,typingActive=false,typingSendTimer=null,typingClearTimer=null;
   const norm=s=>String(s||'').toLowerCase();
   function setStatus(t,state='offline'){status.textContent=t;status.dataset.state=state}
+  const chatNavButton=document.querySelector('nav button[data-v="chat"]');
+  const chatView=document.querySelector('#chat-view');
+  const mentionBadge=document.createElement('span');
+  mentionBadge.className='nero-mention-badge';
+  mentionBadge.hidden=true;
+  mentionBadge.setAttribute('aria-label','Unread mentions');
+  if(chatNavButton){chatNavButton.style.position='relative';chatNavButton.append(mentionBadge)}
+  const mentionToast=document.createElement('div');
+  mentionToast.className='nero-mention-toast';
+  mentionToast.setAttribute('role','status');
+  mentionToast.setAttribute('aria-live','polite');
+  mentionToast.hidden=true;
+  document.body.append(mentionToast);
+  let unreadMentions=0,mentionToastTimer=null,audioContext=null;
+  const mentionStorageKey=()=> 'nero.unread.mentions.'+(user?.id||'');
+  function renderMentionBadge(){
+    mentionBadge.textContent=unreadMentions>99?'99+':String(unreadMentions);
+    mentionBadge.hidden=unreadMentions===0;
+    if(chatNavButton)chatNavButton.setAttribute('aria-label',unreadMentions?('Global chat, '+unreadMentions+' unread mentions'):'Global chat');
+    document.title=unreadMentions?'('+unreadMentions+') NERO':'NERO';
+  }
+  function loadMentionCount(){
+    try{unreadMentions=Math.max(0,Number(localStorage.getItem(mentionStorageKey())||0)||0)}catch(e){unreadMentions=0}
+    renderMentionBadge();
+  }
+  function clearMentionCount(){
+    unreadMentions=0;
+    try{localStorage.removeItem(mentionStorageKey())}catch(e){}
+    renderMentionBadge();
+    mentionToast.hidden=true;
+  }
+  function unlockMentionAudio(){
+    try{
+      const AudioCtor=window.AudioContext||window.webkitAudioContext;
+      if(!AudioCtor)return;
+      if(!audioContext)audioContext=new AudioCtor();
+      if(audioContext.state==='suspended')audioContext.resume();
+    }catch(e){}
+  }
+  window.addEventListener('pointerdown',unlockMentionAudio,{once:true,capture:true});
+  window.addEventListener('keydown',unlockMentionAudio,{once:true,capture:true});
+  function playMentionDing(){
+    try{
+      unlockMentionAudio();
+      if(!audioContext||audioContext.state!=='running')return;
+      const now=audioContext.currentTime;
+      [880,1174.66].forEach((frequency,index)=>{
+        const oscillator=audioContext.createOscillator(),gain=audioContext.createGain();
+        oscillator.type='sine';oscillator.frequency.setValueAtTime(frequency,now+index*.09);
+        gain.gain.setValueAtTime(.0001,now+index*.09);
+        gain.gain.exponentialRampToValueAtTime(.13,now+index*.09+.012);
+        gain.gain.exponentialRampToValueAtTime(.0001,now+index*.09+.19);
+        oscillator.connect(gain);gain.connect(audioContext.destination);
+        oscillator.start(now+index*.09);oscillator.stop(now+index*.09+.2);
+      });
+    }catch(e){}
+  }
+  function notifyMention(from){
+    if(chatView?.classList.contains('on'))return;
+    unreadMentions++;
+    try{localStorage.setItem(mentionStorageKey(),String(unreadMentions))}catch(e){}
+    renderMentionBadge();
+    mentionToast.textContent=(from||'Someone')+' mentioned you';
+    mentionToast.hidden=false;
+    if(mentionToastTimer)clearTimeout(mentionToastTimer);
+    mentionToastTimer=setTimeout(()=>{mentionToast.hidden=true},3600);
+    playMentionDing();
+  }
+  chatNavButton?.addEventListener('click',clearMentionCount,true);
   function renderOnline(){usersList.replaceChildren();for(const [id,name] of online){if(id===user?.id)continue;const o=document.createElement('option');o.value='@'+name;o.label=name;usersList.append(o)}}
   function syncPresence(){online.clear();for(const entries of Object.values(channel?.presenceState()||{}))for(const e of entries)if(e?.userId&&e?.username)online.set(e.userId,e.username);renderOnline()}
   const typingIndicator=document.createElement('div');typingIndicator.className='global-chat-typing';typingIndicator.setAttribute('aria-live','polite');typingIndicator.hidden=true;room.insertBefore(typingIndicator,form);
@@ -21,7 +90,7 @@
   async function connect(){if(!client||!user||!profile){setStatus('Sign in to use chat');return}if(channel)await client.removeChannel(channel);joined=false;messages.replaceChildren();seen.clear();setStatus('Connecting…','pending');
     channel=client.channel('nero-global-chat',{config:{presence:{key:user.id}}});
     channel.on('postgres_changes',{event:'INSERT',schema:'public',table:'chat_messages'},p=>addMessage(p.new));channel.on('presence',{event:'sync'},syncPresence);channel.on('broadcast',{event:'typing'},({payload})=>{if(!payload?.userId||payload.userId===user?.id||!payload.username)return;const id=payload.userId;if(payload.typing){typingUsers.set(id,payload.username);const old=typingTimers.get(id);if(old)clearTimeout(old);typingTimers.set(id,setTimeout(()=>{typingUsers.delete(id);typingTimers.delete(id);renderTyping()},2200))}else{const old=typingTimers.get(id);if(old)clearTimeout(old);typingTimers.delete(id);typingUsers.delete(id)}renderTyping()});
-    channel.on('broadcast',{event:'mention'},({payload})=>{if(payload?.to===norm(profile.username)){setStatus(payload.from+' mentioned you','connected');status.classList.add('mentioned')}});
+    channel.on('broadcast',{event:'mention'},({payload})=>{if(payload?.to===norm(profile.username)){setStatus(payload.from+' mentioned you','connected');status.classList.add('mentioned');notifyMention(payload.from)}});
     channel.subscribe(async state=>{if(state==='SUBSCRIBED'){joined=true;joinPanel.hidden=true;room.hidden=false;setStatus('Connected as @'+profile.username,'connected');await channel.track({userId:user.id,username:profile.username});try{await history()}catch(e){setStatus('Could not load messages: '+e.message,'error')}}
       else if(state==='CHANNEL_ERROR'||state==='TIMED_OUT'){joined=false;setStatus('Chat connection failed. Refresh and try again.','error')}})}
   form.addEventListener('submit',async e=>{e.preventDefault();const content=input.value.trim();if(!content||!joined||!user||!profile)return;input.disabled=true;
@@ -34,8 +103,8 @@
       const {error}=await client.from('chat_messages').insert({guest_id:user.id,user_id:user.id,username:profile.username,content:'',image_path:path});if(error)throw error;setStatus('Image sent','connected')
     }catch(err){setStatus(err.message||'Image upload failed','error')}finally{attachButton.disabled=false}});
   input.addEventListener('input',()=>{if(input.value.trim())announceTyping();else stopTyping();if(input.value.includes('@'))renderOnline()});input.addEventListener('blur',stopTyping);
-  window.addEventListener('nero:auth-change',async e=>{user=e.detail?.user||null;profile=e.detail?.profile||null;if(user&&profile)await connect();else{await disconnect();setStatus('Sign in to use chat')}});
-  if(window.NERO_AUTH?.user&&window.NERO_AUTH?.profile){user=window.NERO_AUTH.user;profile=window.NERO_AUTH.profile;connect()}else setStatus('Sign in to use chat');
+  window.addEventListener('nero:auth-change',async e=>{user=e.detail?.user||null;profile=e.detail?.profile||null;if(user&&profile){loadMentionCount();await connect()}else{clearMentionCount();await disconnect();setStatus('Sign in to use chat')}});
+  if(window.NERO_AUTH?.user&&window.NERO_AUTH?.profile){user=window.NERO_AUTH.user;profile=window.NERO_AUTH.profile;loadMentionCount();connect()}else setStatus('Sign in to use chat');
   document.querySelector('nav button[data-v="chat"]')?.addEventListener('click',()=>{if(!user)window.NERO_ACCOUNT?.open()});
   window.addEventListener('beforeunload',()=>{if(channel)client.removeChannel(channel)});
 })();
