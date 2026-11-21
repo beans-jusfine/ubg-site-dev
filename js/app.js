@@ -6,7 +6,7 @@ loadLucide().catch(()=>{});
 const WISP_URL=window.NERO_CONFIG.wisp;
 const AI_URL=window.NERO_CONFIG.ai;
 const isPlaceholder=u=>/YOUR-/.test(u);
-function show(v){$$('.view').forEach(e=>e.classList.toggle('on',e.id===(v==='games'?'games-view':v)));$$('nav button[data-v]').forEach(b=>b.classList.toggle('on',b.dataset.v===v))}
+function show(v){$$('.view').forEach(e=>e.classList.toggle('on',e.id===(v==='games'?'games-view':v==='chat'?'chat-view':v)));$$('nav button[data-v]').forEach(b=>b.classList.toggle('on',b.dataset.v===v))}
 $$('nav button[data-v]').forEach(b=>b.onclick=()=>nav(b.dataset.v));
 let luminPromise=null,luminInitialized=false;
 function initLumin(){if(luminInitialized)return Promise.resolve();if(luminPromise)return luminPromise;luminPromise=new Promise((resolve,reject)=>{if(window.Lumin){try{window.Lumin.init({container:'#games',theme:'dark'});luminInitialized=true;resolve()}catch(e){reject(e)}return}const s=document.createElement('script');s.src='https://cdn.jsdelivr.net/gh/luminsdk/script@latest/lumin.min.js';s.async=true;s.onload=()=>{try{window.Lumin.init({container:'#games',theme:'dark'});luminInitialized=true;resolve()}catch(e){reject(e)}};s.onerror=()=>reject(new Error('Lumin games failed to load'));document.head.appendChild(s)});return luminPromise}
@@ -210,7 +210,7 @@ renderMemories();saveChats();renderChatList();renderHistory();
 $('#ai-send').onclick=ask;ain.onkeydown=e=>{if(e.key==='Enter'&&!e.shiftKey){e.preventDefault();ask()}};
 
 
-const names={home:'new tab',tube:'Movies',games:'games',ai:'ai',settings:'settings'};
+const names={home:'new tab',tube:'Movies',games:'games',chat:'global chat',ai:'ai',settings:'settings'};
 let tabs=[],cur=0,nid=0;
 const cT=()=>tabs.find(x=>x.id===cur);
 function newTab(v){v=v||'home';const t={id:++nid,v,src:'',u:'',title:names[v]};tabs.push(t);cur=t.id;draw()}
