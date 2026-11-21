@@ -9980,3 +9980,16 @@ nav button[data-v="chat"]{position:relative}
 .global-chat-image-viewer img{max-width:96vw;max-height:90vh;object-fit:contain}
 .global-chat-image-viewer-close{position:absolute;top:16px;right:20px;width:42px;height:42px;border:1px solid #ffffff55;border-radius:50%;background:#111;color:#fff;font-size:28px;cursor:pointer}
 body.global-chat-viewer-open{overflow:hidden}
+
+.nero-auth-avatar{background-repeat:no-repeat;background-size:cover;background-position:center}
+#nero-profile-editor{padding:8px 0 14px}
+#nero-profile-editor[hidden]{display:none}
+#nero-profile-editor input{width:100%;box-sizing:border-box}
+#chat-view .global-chat-profile-trigger{padding:0;border:0;background:transparent;color:inherit;font:inherit;font-weight:700;cursor:pointer}
+#chat-view .global-chat-profile-trigger:hover{color:var(--chat-accent)}
+.global-chat-public-profile{position:fixed;z-index:2500;left:50%;top:50%;transform:translate(-50%,-50%);display:flex;flex-direction:column;align-items:center;gap:8px;width:min(320px,calc(100vw - 32px));padding:20px;border:1px solid var(--line);border-radius:16px;background:var(--panel);color:var(--text);box-shadow:0 20px 70px #0009;text-align:center}
+.global-chat-public-profile[hidden]{display:none}
+.global-chat-public-profile>button{align-self:flex-end;border:0;background:transparent;color:var(--mute);font-size:22px;cursor:pointer}
+.global-chat-public-avatar{width:76px;height:76px;display:grid;place-items:center;border-radius:50%;background:var(--bg);background-size:cover;background-position:center;font-size:28px;font-weight:800}
+.global-chat-public-profile>span{font-size:12px;color:var(--mute)}
+.global-chat-public-profile p{margin:4px 0 0;font-size:13px;overflow-wrap:anywhere}
