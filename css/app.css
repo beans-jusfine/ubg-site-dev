@@ -9929,3 +9929,23 @@ nav button[data-v="chat"]{position:relative}
 #chat-view .global-chat-wumboji{font-size:40px;line-height:1.25;letter-spacing:2px}
 #chat-view .global-chat-gif-message-image{max-width:min(100%,480px);max-height:340px;object-fit:contain}
 @media(max-width:600px){#chat-view .global-chat-emoji-picker,#chat-view .global-chat-gif-picker{left:4px;width:min(370px,calc(100vw - 32px));max-height:55vh}#chat-view .global-chat-emoji-grid{grid-template-columns:repeat(7,minmax(0,1fr))}#chat-view .global-chat-emoji,#chat-view .global-chat-gif{height:42px;min-width:36px}}
+
+
+/* Global chat message management + reactions */
+#chat-view .global-chat-message{position:relative}
+#chat-view .global-chat-message-actions{display:flex;align-items:center;gap:5px;margin-top:5px;opacity:.72}
+#chat-view .global-chat-message-actions button{padding:3px 7px;border:1px solid var(--chat-line);border-radius:6px;background:transparent;color:var(--chat-muted);font-size:11px;cursor:pointer}
+#chat-view .global-chat-message-actions button:hover{border-color:var(--chat-accent);color:var(--chat-accent)}
+#chat-view .global-chat-message-actions button.danger:hover{border-color:#e45b65;color:#e45b65}
+#chat-view .global-chat-reaction-tray{display:flex;flex-wrap:wrap;gap:4px;margin-top:5px;padding:5px;border:1px solid var(--chat-line);border-radius:9px;background:var(--chat-panel);width:max-content;max-width:100%}
+#chat-view .global-chat-reaction-tray[hidden]{display:none}
+#chat-view .global-chat-reaction-tray button{width:32px;height:32px;border:0;border-radius:7px;background:transparent;font-size:19px;cursor:pointer}
+#chat-view .global-chat-reaction-tray button:hover{background:color-mix(in srgb,var(--chat-accent) 16%,var(--chat-panel))}
+#chat-view .global-chat-reactions{display:flex;flex-wrap:wrap;gap:5px;margin-top:6px}
+#chat-view .global-chat-reaction{padding:3px 8px;border:1px solid var(--chat-line);border-radius:999px;background:var(--chat-bg);color:var(--chat-text);font-size:12px;cursor:pointer}
+#chat-view .global-chat-reaction.mine{border-color:var(--chat-accent);background:color-mix(in srgb,var(--chat-accent) 15%,var(--chat-panel))}
+#chat-view .global-chat-edited{font-size:10px;color:var(--chat-muted);font-style:italic}
+#chat-view .global-chat-edit-form{display:flex;flex-wrap:wrap;gap:6px;margin-top:6px}
+#chat-view .global-chat-edit-form textarea{flex:1 1 100%;min-width:0;min-height:52px;padding:8px;border:1px solid var(--chat-line);border-radius:8px;background:var(--chat-bg);color:var(--chat-text);font:inherit;font-size:13px;resize:vertical}
+#chat-view .global-chat-edit-form button{padding:5px 10px;border:1px solid var(--chat-line);border-radius:7px;background:var(--chat-panel);color:var(--chat-text);font-size:11px;cursor:pointer}
+#chat-view .global-chat-edit-form button[type=submit]{background:var(--chat-accent);color:#fff;border-color:var(--chat-accent)}
