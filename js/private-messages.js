@@ -33,15 +33,15 @@
       const otherId=c.user_one===user.id?c.user_two:c.user_one,p=profileCache.get(otherId)||{username:'member'},last=latest.get(c.id);
       const row=document.createElement('div');row.className='nero-dm-conversation-row';
       const b=document.createElement('button');b.type='button';b.className='nero-dm-conversation'+(activeConversation?.id===c.id?' active':'');b.addEventListener('click',()=>openConversation(otherId));
-      b.append(avatar(p));const detail=document.createElement('span');detail.className='nero-dm-conversation-detail';
+      const detail=document.createElement('span');detail.className='nero-dm-conversation-detail';
       const name=document.createElement('strong');name.textContent=profileName(p);
       const preview=document.createElement('small');preview.textContent=last?((last.sender_id===user.id?'You: ':'')+last.content):'Start a conversation';
       const time=document.createElement('time');time.textContent=last?shortTime(last.created_at):'';time.title=last?fullTime(last.created_at):'';
-      detail.append(name,preview);b.append(detail,time);
-      const hide=document.createElement('span');hide.className='nero-dm-hide';hide.textContent='×';hide.title='Hide this direct message';hide.setAttribute('role','button');hide.setAttribute('tabindex','0');hide.setAttribute('aria-label','Hide direct messages with '+(p.username||'this member'));
-      const hideConversation=async e=>{e.preventDefault();e.stopPropagation();hide.setAttribute('aria-disabled','true');try{const {error}=await client.from('dm_hidden_conversations').insert({user_id:user.id,conversation_id:c.id});if(error&&error.code!=='23505')throw error;hiddenConversationIds.add(c.id);conversations=conversations.filter(item=>item.id!==c.id);renderConversationList(latest)}catch(error){hide.removeAttribute('aria-disabled');alert(error.message||'Could not hide this conversation.')}};
-      hide.addEventListener('click',hideConversation);hide.addEventListener('keydown',e=>{if(e.key==='Enter'||e.key===' '){hideConversation(e)}});
-      b.append(detail,time,hide);row.append(b);list.append(row);
+      detail.append(name,preview);b.append(avatar(p),detail,time);
+      const hide=document.createElement('button');hide.type='button';hide.className='nero-dm-hide';hide.textContent='×';hide.title='Hide this direct message';hide.setAttribute('aria-label','Hide direct messages with '+(p.username||'this member'));
+      const hideConversation=async e=>{e.preventDefault();e.stopPropagation();hide.disabled=true;try{const {error}=await client.from('dm_hidden_conversations').insert({user_id:user.id,conversation_id:c.id});if(error&&error.code!=='23505')throw error;hiddenConversationIds.add(c.id);conversations=conversations.filter(item=>item.id!==c.id);renderConversationList(latest)}catch(error){hide.disabled=false;alert(error.message||'Could not hide this conversation.')}};
+      hide.addEventListener('click',hideConversation);
+      row.append(b,hide);list.append(row);
     });
   }
   async function loadConversations(){
