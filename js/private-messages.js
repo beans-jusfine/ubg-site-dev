@@ -40,7 +40,7 @@
     });
   }
   async function loadConversations(){
-    if(!user?.id){list.replaceChildren();const p=document.createElement('p');p.className='nero-dm-muted';p.textContent='Sign in to use private messages.';list.append(p);return}
+    if(!user?.id){list.replaceChildren();const p=document.createElement('p');p.className='nero-dm-muted';p.textContent='Sign in to use direct messages.';list.append(p);return}
     const {data,error}=await client.from('dm_conversations').select('id,user_one,user_two,created_at');if(error)throw error;conversations=data||[];
     if(!conversations.length){renderConversationList(new Map());return}
     const ids=conversations.map(c=>c.id),r=await client.from('dm_messages').select('id,conversation_id,sender_id,content,created_at').in('conversation_id',ids).order('created_at',{ascending:false}).limit(500);if(r.error)throw r.error;
@@ -78,7 +78,7 @@
   async function openNewMessage(){
     if(!user?.id){window.NERO_ACCOUNT?.open();return}try{if(!profileCache.size)await loadProfiles()}catch(e){alert(e.message);return}
     const overlay=document.createElement('div');overlay.className='nero-dm-search-overlay';const dialog=document.createElement('section');dialog.className='nero-dm-search-dialog';
-    const title=document.createElement('div');title.className='nero-dm-search-title';const heading=document.createElement('strong');heading.textContent='New private message';
+    const title=document.createElement('div');title.className='nero-dm-search-title';const heading=document.createElement('strong');heading.textContent='New direct message';
     const close=document.createElement('button');close.type='button';close.textContent='×';close.setAttribute('aria-label','Close');close.addEventListener('click',()=>overlay.remove());title.append(heading,close);
     const search=document.createElement('input');search.type='search';search.placeholder='Find a member by username…';search.maxLength=24;search.autocomplete='off';
     const results=document.createElement('div');results.className='nero-dm-search-results';
@@ -109,7 +109,7 @@
   async function refresh(){
     user=window.NERO_AUTH?.user||null;activeConversation=null;activeOther=null;active.hidden=true;empty.hidden=false;
     if(!user?.id){stopRealtime();conversations=[];profileCache.clear();await loadConversations();return}
-    try{await loadProfiles();await loadConversations();startRealtime()}catch(e){list.replaceChildren();const p=document.createElement('p');p.className='nero-dm-muted';p.textContent=e.message||'Could not load private messages.';list.append(p)}
+    try{await loadProfiles();await loadConversations();startRealtime()}catch(e){list.replaceChildren();const p=document.createElement('p');p.className='nero-dm-muted';p.textContent=e.message||'Could not load direct messages.';list.append(p)}
   }
   window.addEventListener('nero:auth-change',refresh);if(user?.id)refresh();
 })();
