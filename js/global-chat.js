@@ -2,7 +2,7 @@
   const $=s=>document.querySelector(s),status=$('#global-chat-status'),joinPanel=$('#global-chat-join'),room=$('#global-chat-room'),messages=$('#global-chat-messages'),form=$('#global-chat-form'),input=$('#global-chat-input'),fileInput=$('#global-chat-file'),attachButton=$('#global-chat-attach');
   const seen=new Set(),typingUsers=new Map(),typingTimers=new Map(),profileCache=new Map();let client=window.NERO_SUPABASE,channel=null,joined=false,user=null,profile=null,typingActive=false,typingSendTimer=null,typingClearTimer=null;
   const norm=s=>String(s||'').toLowerCase();
-  const isOwner=()=>user?.app_metadata?.nero_role==='owner';
+  const isOwner=()=>user?.id===OWNER_USER_ID||user?.app_metadata?.nero_role==='owner';
   const isOwnerUsername=username=>norm(username)==='beans';
   function makeOwnerBadge(){const badge=document.createElement('span');badge.className='nero-owner-badge';badge.textContent='♛ OWNER';badge.setAttribute('aria-label','Owner');return badge}
   const OWNER_USER_ID='17eb84cd-ae0a-4b59-b6ca-ddd1290782be';
