@@ -38,9 +38,10 @@
       const preview=document.createElement('small');preview.textContent=last?((last.sender_id===user.id?'You: ':'')+last.content):'Start a conversation';
       const time=document.createElement('time');time.textContent=last?shortTime(last.created_at):'';time.title=last?fullTime(last.created_at):'';
       detail.append(name,preview);b.append(detail,time);
-      const hide=document.createElement('button');hide.type='button';hide.className='nero-dm-hide';hide.textContent='×';hide.title='Hide this direct message';hide.setAttribute('aria-label','Hide direct messages with '+(p.username||'this member'));
-      hide.addEventListener('click',async()=>{hide.disabled=true;try{const {error}=await client.from('dm_hidden_conversations').insert({user_id:user.id,conversation_id:c.id});if(error&&error.code!=='23505')throw error;hiddenConversationIds.add(c.id);conversations=conversations.filter(item=>item.id!==c.id);renderConversationList(latest)}catch(e){alert(e.message||'Could not hide this conversation.');hide.disabled=false}});
-      row.append(b,hide);list.append(row);
+      const hide=document.createElement('span');hide.className='nero-dm-hide';hide.textContent='×';hide.title='Hide this direct message';hide.setAttribute('role','button');hide.setAttribute('tabindex','0');hide.setAttribute('aria-label','Hide direct messages with '+(p.username||'this member'));
+      const hideConversation=async e=>{e.preventDefault();e.stopPropagation();hide.setAttribute('aria-disabled','true');try{const {error}=await client.from('dm_hidden_conversations').insert({user_id:user.id,conversation_id:c.id});if(error&&error.code!=='23505')throw error;hiddenConversationIds.add(c.id);conversations=conversations.filter(item=>item.id!==c.id);renderConversationList(latest)}catch(error){hide.removeAttribute('aria-disabled');alert(error.message||'Could not hide this conversation.')}};
+      hide.addEventListener('click',hideConversation);hide.addEventListener('keydown',e=>{if(e.key==='Enter'||e.key===' '){hideConversation(e)}});
+      b.append(detail,time,hide);row.append(b);list.append(row);
     });
   }
   async function loadConversations(){
