@@ -10318,3 +10318,15 @@ body.global-chat-resizing{cursor:col-resize!important;user-select:none!important
 #chat-view .global-chat-room[hidden]{display:none}
 #chat-view .global-chat-layout.nero-dm-hidden .global-chat-room{flex:1 1 0}
 #chat-view .global-chat-layout.nero-members-hidden .global-chat-room{flex:1 1 0}
+
+
+/* NERO v1.1.0: expand the chat workspace into the space left by the removed heading */
+#chat-view .global-chat-layout{width:100%;max-width:none;min-height:0}
+#chat-view .global-chat-room{height:calc(100dvh - 155px);min-height:460px;max-height:calc(100dvh - 110px)}
+#chat-view .global-chat-messages{min-height:0}
+@media(max-width:900px){
+  #chat-view .global-chat-room{height:calc(100dvh - 145px);min-height:380px;max-height:calc(100dvh - 105px)}
+}
+@media(max-width:600px){
+  #chat-view .global-chat-room{height:calc(100dvh - 170px);min-height:340px;max-height:calc(100dvh - 120px)}
+}
