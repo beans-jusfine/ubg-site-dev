@@ -10194,3 +10194,14 @@ body.global-chat-resizing{cursor:col-resize!important;user-select:none!important
 .nero-owner-badge{display:inline-flex;align-items:center;gap:3px;margin-left:6px;padding:2px 6px;border:1px solid color-mix(in srgb,#d6a84b 55%,transparent);border-radius:999px;background:color-mix(in srgb,#d6a84b 15%,transparent);color:#d6a84b;font-size:9px;font-weight:800;line-height:1.35;letter-spacing:.045em;vertical-align:middle;white-space:nowrap}
 #chat-view .global-chat-member-details .nero-owner-badge{margin-left:5px;font-size:8px;padding:1px 5px}
 .global-chat-public-profile .nero-owner-badge{margin-left:0}
+
+
+/* Owner-only chat moderation controls and @everyone mention styling. */
+.global-chat-moderation-controls{display:flex;flex-wrap:wrap;justify-content:center;gap:7px;width:100%;margin-top:10px;padding-top:12px;border-top:1px solid var(--line)}
+.global-chat-moderation-controls>strong{flex-basis:100%;font-size:11px;color:var(--mute);text-align:left}
+.global-chat-moderation-controls>button{padding:7px 11px;border:1px solid var(--line);border-radius:8px;background:var(--bg);color:var(--text);font-size:11px;font-weight:650;cursor:pointer;transition:background .16s,border-color .16s,transform .16s}
+.global-chat-moderation-controls>button:hover{border-color:var(--acc);background:color-mix(in srgb,var(--acc) 12%,var(--bg));transform:translateY(-1px)}
+.global-chat-moderation-controls>button.danger{border-color:color-mix(in srgb,#e05252 45%,var(--line));color:#e05252}
+.global-chat-moderation-controls>button:disabled{opacity:.55;cursor:wait;transform:none}
+.global-chat-moderation-controls>small{color:var(--mute);font-size:10px}
+.global-chat-message-body .global-chat-mention.everyone{padding:1px 5px;border-radius:5px;background:color-mix(in srgb,#d6a84b 20%,transparent);color:#d6a84b;font-weight:800}
