@@ -6,10 +6,11 @@ const pool=DATABASE_URL?new Pool({connectionString:DATABASE_URL,max:8,idleTimeou
 let dbReady=false;
 async function initDb(){if(!pool)return;await pool.query("CREATE TABLE IF NOT EXISTS chat_messages(id BIGSERIAL PRIMARY KEY,guest_id VARCHAR(80) NOT NULL,username VARCHAR(24) NOT NULL,content VARCHAR(500) NOT NULL,created_at TIMESTAMPTZ NOT NULL DEFAULT NOW()); CREATE INDEX IF NOT EXISTS chat_messages_created_at_idx ON chat_messages(created_at DESC);");dbReady=true;console.log('NERO Chat database ready')}
 function format(r){return{id:String(r.id),guestId:r.guest_id,username:r.username,content:r.content,createdAt:r.created_at}}
-app.get('/health',(_q,s)=>s.json({ok:true,database:dbReady}));
+app.get('/',(_q,s)=>s.json({service:'NERO Chat API',ok:true,database:dbReady,websocket:'/chat',health:'/health'}));
+app.get('/health',(_q,s)=>s.json({ok:true,databaseConfigured:Boolean(DATABASE_URL),database:dbReady}));
 app.get('/messages',async(q,s)=>{if(!dbReady)return s.status(503).json({error:'Chat database is not configured yet'});const limit=Math.max(1,Math.min(100,parseInt(q.query.limit,10)||80));try{const r=await pool.query('SELECT id,guest_id,username,content,created_at FROM chat_messages ORDER BY id DESC LIMIT $1',[limit]);s.json({messages:r.rows.reverse().map(format)})}catch(e){console.error('History query:',e.message);s.status(500).json({error:'Could not load messages'})}});
 const server=http.createServer(app),wss=new WebSocket.Server({noServer:true,maxPayload:4096}),rates=new Map();
-server.on('upgrade',(req,sock,head)=>{if(!allowed(req.headers.origin)||req.url!=='/chat'||!dbReady){sock.write('HTTP/1.1 403 Forbidden\r\n\r\n');sock.destroy();return}wss.handleUpgrade(req,sock,head,ws=>wss.emit('connection',ws,req))});
+server.on('upgrade',(req,sock,head)=>{if(!allowed(req.headers.origin)||req.url!=='/chat'){sock.write('HTTP/1.1 403 Forbidden\r\n\r\n');sock.destroy();return}if(!dbReady){sock.write('HTTP/1.1 503 Service Unavailable\r\nRetry-After: 15\r\n\r\n');sock.destroy();return}wss.handleUpgrade(req,sock,head,ws=>wss.emit('connection',ws,req))});
 function error(ws,msg){if(ws.readyState===WebSocket.OPEN)ws.send(JSON.stringify({type:'error',message:msg}))}
 wss.on('connection',(ws,req)=>{ws.isAlive=true;ws.on('pong',()=>ws.isAlive=true);ws.on('message',async raw=>{
  let d;try{d=JSON.parse(raw.toString())}catch{return error(ws,'Invalid message')}

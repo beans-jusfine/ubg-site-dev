@@ -18,14 +18,15 @@
     while(messages.children.length>120)messages.firstElementChild.remove();messages.scrollTop=messages.scrollHeight;
   }
   async function history(){const r=await fetch(api+'/messages?limit=80');if(!r.ok)throw Error('Could not load chat history');const d=await r.json();(d.messages||[]).forEach(addMessage);if(!messages.children.length){const p=document.createElement('p');p.className='global-chat-empty';p.textContent='No messages yet. Start the conversation!';messages.append(p)}}
-  function connect(username){
+  async function connect(username){
     clearTimeout(reconnectTimer);if(socket){socket.onclose=null;socket.close()}joined=false;
+    try{const check=await fetch(api+'/health',{cache:'no-store'});if(!check.ok)throw Error('Chat server is unavailable');const health=await check.json();if(!health.database){setStatus(health.databaseConfigured?'Database is starting — try again shortly':'Chat database is not connected. Add DATABASE_URL in Render.','error');return}}catch(e){setStatus(e.message||'Cannot reach chat server','error');return}
     socket=new WebSocket(api.replace(/^http/,'ws')+'/chat');setStatus('Connecting…','pending');
     socket.addEventListener('open',()=>{socket.send(JSON.stringify({type:'join',username,guestId}));history().catch(e=>setStatus(e.message,'error'))});
     socket.addEventListener('message',e=>{let d;try{d=JSON.parse(e.data)}catch{return}
       if(d.type==='ready'){joined=true;setStatus('Connected as '+username,'connected');joinPanel.hidden=true;room.hidden=false}
       else if(d.type==='message')addMessage(d.message);else if(d.type==='error')setStatus(d.message||'Chat error','error')});
-    socket.addEventListener('close',()=>{joined=false;setStatus('Disconnected — reconnecting…','error');reconnectTimer=setTimeout(()=>{if(document.visibilityState!=='hidden')connect(username)},4000)});
+    socket.addEventListener('close',()=>{const wasJoined=joined;joined=false;if(!wasJoined){setStatus('Could not connect. Check the chat server settings.','error');return}setStatus('Disconnected — reconnecting…','error');reconnectTimer=setTimeout(()=>{if(document.visibilityState!=='hidden')connect(username)},4000)});
     socket.addEventListener('error',()=>setStatus('Connection failed','error'));
   }
   $('#global-chat-join-btn').addEventListener('click',()=>{
