@@ -9992,3 +9992,15 @@ body.global-chat-viewer-open{overflow:hidden}
 #chat-view .global-chat-gif-favorites{padding:7px 9px;border:1px solid var(--chat-line);border-radius:8px;background:var(--chat-bg);color:var(--chat-text);font-size:11px;white-space:nowrap;cursor:pointer}
 #chat-view .global-chat-gif-item{position:relative}
 #chat-view .global-chat-gif-star{position:absolute;top:5px;right:5px;z-index:2;width:25px;height:25px;border:1px solid #ffffff66;border-radius:50%;background:#111b;color:#ffd65a;font-size:17px;cursor:pointer}
+
+
+/* NERO chat usability fixes: keep the composer visible and timestamps on every message. */
+#chat-view .global-chat-room{height:clamp(340px,calc(100dvh - 245px),680px);min-height:340px;max-height:calc(100dvh - 180px)}
+#chat-view .global-chat-messages{min-height:150px;overscroll-behavior:contain}
+#chat-view .global-chat-compose{flex:0 0 auto;position:relative;z-index:2;min-height:68px;padding-bottom:max(12px,env(safe-area-inset-bottom))}
+#chat-view .global-chat-message-meta{min-height:16px;display:flex!important;align-items:center;gap:8px}
+#chat-view .global-chat-message-meta time{display:inline-block;opacity:.8;font-size:10px;font-variant-numeric:tabular-nums}
+#chat-view .global-chat-message-name[hidden]{display:none!important}
+#chat-view .global-chat-sent-gif-favorite{align-self:flex-start;padding:4px 8px;border:1px solid var(--chat-line);border-radius:7px;background:var(--chat-panel);color:var(--chat-muted);font-size:11px;cursor:pointer}
+#chat-view .global-chat-sent-gif-favorite[aria-pressed=true]{color:#d9a928;border-color:#d9a928}
+@media(max-width:600px){#chat-view .global-chat-room{height:clamp(320px,calc(100dvh - 210px),65vh);min-height:320px;max-height:calc(100dvh - 150px)}#chat-view .global-chat-compose{gap:5px;padding:8px;padding-bottom:max(8px,env(safe-area-inset-bottom))}}
