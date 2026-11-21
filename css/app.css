@@ -9993,3 +9993,10 @@ body.global-chat-viewer-open{overflow:hidden}
 .global-chat-public-avatar{width:76px;height:76px;display:grid;place-items:center;border-radius:50%;background:var(--bg);background-size:cover;background-position:center;font-size:28px;font-weight:800}
 .global-chat-public-profile>span{font-size:12px;color:var(--mute)}
 .global-chat-public-profile p{margin:4px 0 0;font-size:13px;overflow-wrap:anywhere}
+
+#chat-view .global-chat-custom-upload{flex:none;padding:7px 10px;border:1px solid var(--chat-line);border-radius:8px;background:var(--chat-bg);color:var(--chat-text);font-size:11px;cursor:pointer}
+#chat-view .global-chat-emoji-grid .global-chat-custom-emoji,#chat-view .global-chat-emoji-grid img{width:27px;height:27px;object-fit:contain}
+#chat-view .global-chat-message-body .global-chat-custom-emoji{width:24px;height:24px;object-fit:contain;vertical-align:middle}
+#chat-view .global-chat-gif-favorites{padding:7px 9px;border:1px solid var(--chat-line);border-radius:8px;background:var(--chat-bg);color:var(--chat-text);font-size:11px;white-space:nowrap;cursor:pointer}
+#chat-view .global-chat-gif-item{position:relative}
+#chat-view .global-chat-gif-star{position:absolute;top:5px;right:5px;z-index:2;width:25px;height:25px;border:1px solid #ffffff66;border-radius:50%;background:#111b;color:#ffd65a;font-size:17px;cursor:pointer}
