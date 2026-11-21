@@ -9730,3 +9730,166 @@ nav button[data-v="chat"]{position:relative}
 .nero-mention-toast[hidden]{display:none}
 @keyframes nero-mention-pop{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:translateY(0)}}
 @media(max-width:600px){.nero-mention-toast{right:12px;bottom:12px}}
+
+
+/* NERO chat follows the active site appearance and accent */
+#chat-view{
+  --chat-bg:var(--bg);
+  --chat-panel:var(--panel);
+  --chat-line:var(--line);
+  --chat-text:var(--text);
+  --chat-muted:var(--mute);
+  --chat-accent:var(--acc);
+  color:var(--chat-text)!important;
+  color-scheme:inherit;
+}
+#chat-view .chat-room,
+#chat-view .chat-main,
+#chat-view .room-messages,
+#chat-view .auth-screen,
+#chat-view .chat-boot,
+#chat-view .room-loading{background:var(--chat-bg)!important;color:var(--chat-text)!important}
+#chat-view .chat-sidebar,
+#chat-view .chat-members,
+#chat-view .room-head,
+#chat-view .room-composer,
+#chat-view .room-field,
+#chat-view .global-chat-room,
+#chat-view .global-chat-join,
+#chat-view .global-chat-compose,
+#chat-view .modal-card,
+#chat-view .profile-card,
+#chat-view .status-menu,
+#chat-view .emoji-picker,
+#chat-view .gif-picker,
+#chat-view .mention-popup,
+#chat-view .room-panel,
+#chat-view .voice-panel,
+#chat-view .voice-settings-card,
+#chat-view .channel-modal-card,
+#chat-view .group-modal-card,
+#chat-view .report-modal-card,
+#chat-view .gift-modal-card,
+#chat-view .giveaway-modal-card,
+#chat-view .trade-window{background:var(--chat-panel)!important;color:var(--chat-text)!important;border-color:var(--chat-line)!important}
+#chat-view .channel-row:hover,
+#chat-view .channel-row.current,
+#chat-view .member-row:hover,
+#chat-view .status-menu-item:hover,
+#chat-view .status-menu-item[aria-checked=true],
+#chat-view .mention-option:hover,
+#chat-view .mention-option.active,
+#chat-view .profile-side-nav button:hover,
+#chat-view .profile-side-nav button:focus-visible,
+#chat-view .room-panel-item:hover,
+#chat-view .emoji-option:hover,
+#chat-view .gif-category:hover,
+#chat-view .modal-close:hover{background:color-mix(in srgb,var(--chat-accent) 12%,var(--chat-panel))!important}
+#chat-view .msg,
+#chat-view .msg-reply,
+#chat-view .msg-edit-input,
+#chat-view .profile-edit-field,
+#chat-view .cm-field input,
+#chat-view .cm-field select,
+#chat-view .cm-field textarea,
+#chat-view .gm-search,
+#chat-view .gif-picker-search input,
+#chat-view .emoji-picker-search input,
+#chat-view .chat-search-box input,
+#chat-view #room-search-input,
+#chat-view .tw-coins input,
+#chat-view .profile-mod-reason,
+#chat-view .global-chat-join-row input,
+#chat-view #global-chat-input,
+#chat-view .room-field textarea{background:var(--chat-bg)!important;color:var(--chat-text)!important;border-color:var(--chat-line)!important}
+#chat-view .msg-text,
+#chat-view .msg-body,
+#chat-view .room-title,
+#chat-view .room-title h2,
+#chat-view .sidebar-heading,
+#chat-view .sidebar-user-name,
+#chat-view .member-name,
+#chat-view .channel-name,
+#chat-view .modal-card h3,
+#chat-view .profile-display-name,
+#chat-view .global-chat-head h1,
+#chat-view .global-chat-join>label,
+#chat-view .global-chat-message-body{color:var(--chat-text)!important}
+#chat-view .auth-sub,
+#chat-view .auth-switch,
+#chat-view .channel-group-label span,
+#chat-view .sidebar-user-status,
+#chat-view .sidebar-user-handle,
+#chat-view .member-status-text,
+#chat-view .room-sub,
+#chat-view .msg-time,
+#chat-view .msg-meta,
+#chat-view .modal-sub,
+#chat-view .profile-username,
+#chat-view .profile-bio,
+#chat-view .global-chat-head .sub,
+#chat-view .global-chat-message-meta,
+#chat-view .global-chat-empty,
+#chat-view .global-chat-join .hint{color:var(--chat-muted)!important}
+#chat-view .auth-field,
+#chat-view .room-field,
+#chat-view .global-chat-room,
+#chat-view .global-chat-join,
+#chat-view .global-chat-notice,
+#chat-view .global-chat-message-body,
+#chat-view .modal-card,
+#chat-view .profile-card{border-color:var(--chat-line)!important}
+#chat-view .auth-field,
+#chat-view .auth-submit,
+#chat-view .room-send,
+#chat-view .call-join-btn,
+#chat-view .profile-save-btn,
+#chat-view .cm-save,
+#chat-view .global-chat-join .btn,
+#chat-view #global-chat-send{background:var(--chat-accent)!important;color:var(--bg)!important;border-color:var(--chat-accent)!important}
+#chat-view .auth-field:focus-within,
+#chat-view .room-field:focus-within,
+#chat-view .global-chat-join-row input:focus,
+#chat-view #global-chat-input:focus,
+#chat-view .profile-edit-field:focus{border-color:var(--chat-accent)!important;box-shadow:0 0 0 3px color-mix(in srgb,var(--chat-accent) 20%,transparent)!important}
+#chat-view .auth-field:after,
+#chat-view .room-field:after{background:var(--chat-accent)!important}
+#chat-view .auth-field-icon,
+#chat-view .auth-reveal,
+#chat-view .auth-link,
+#chat-view .room-field-tool,
+#chat-view .room-head-btn,
+#chat-view .room-head-tool,
+#chat-view .msg-tool,
+#chat-view .msg-action,
+#chat-view .global-chat-attach{color:var(--chat-muted)!important}
+#chat-view .auth-link:hover,
+#chat-view .room-field-tool:hover,
+#chat-view .room-head-btn:hover,
+#chat-view .room-head-tool:hover,
+#chat-view .msg-tool:hover,
+#chat-view .msg-action:hover,
+#chat-view .global-chat-attach:hover{color:var(--chat-accent)!important}
+#chat-view .global-chat-message.mine .global-chat-message-body,
+#chat-view .msg-mentioned,
+#chat-view .md-mention-me{background:color-mix(in srgb,var(--chat-accent) 16%,var(--chat-panel))!important;border-color:color-mix(in srgb,var(--chat-accent) 45%,var(--chat-line))!important}
+#chat-view .global-chat-mention,
+#chat-view .md-mention,
+#chat-view .global-chat-status.mentioned{color:var(--chat-accent)!important}
+#chat-view input::placeholder,
+#chat-view textarea::placeholder{color:var(--chat-muted)!important;opacity:.75}
+#chat-view .global-chat-compose{border-top-color:var(--chat-line)!important}
+#chat-view .chat-sidebar,
+#chat-view .chat-members{border-color:var(--chat-line)!important}
+#chat-view .room-head,
+#chat-view .room-composer{border-color:var(--chat-line)!important}
+:root[data-scheme=light] #chat-view .auth-submit,
+:root[data-scheme=light] #chat-view .room-send,
+:root[data-scheme=light] #chat-view .global-chat-join .btn,
+:root[data-scheme=light] #chat-view #global-chat-send{color:#fff!important}
+@media(prefers-color-scheme:light){
+  :root[data-scheme=system] #chat-view .auth-submit,
+  :root[data-scheme=system] #chat-view .room-send,
+  :root[data-scheme=system] #chat-view .global-chat-join .btn,
+  :root[data-scheme=system] #chat-view #global-chat-send{color:#fff!important}
+}
