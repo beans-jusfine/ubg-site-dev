@@ -1347,3 +1347,6 @@ main:has(>#ai.view.on) {
 .global-chat-mention.self{background:color-mix(in srgb,var(--acc) 28%,transparent);text-decoration:underline}
 .global-chat-status.mentioned{color:var(--acc);border-color:var(--acc)}
 @media(max-width:600px){.global-chat-compose{gap:6px;padding:9px}.global-chat-attach{width:40px;height:40px}.global-chat-image{max-height:240px}}
+
+/* NERO account UI */
+.global-chat-join .hint{margin:8px 0 14px}.global-chat-join strong{font-size:15px}
