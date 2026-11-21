@@ -9,10 +9,11 @@
   <script src="/config.js" defer></script>
   <script src="/js/pages.js" defer></script>
   <script src="/js/app.js" defer></script>
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.js" defer></script>
   <script src="/js/global-chat.js" defer></script>
   <script>
   window.addEventListener('DOMContentLoaded', function () {
-    const root=document.documentElement, settings=document.querySelector('#settings .set');
+    const settings=document.querySelector('#settings .set');
     if(!settings || document.getElementById('nero-qol-tools')) return;
     const css=document.createElement('style');
     css.textContent=`
@@ -52,8 +53,6 @@
         #settings #nero-customization .custom-colors{grid-template-columns:1fr}
       }`;
     document.head.appendChild(css);
-
-    // Wrap the native settings controls into consistent visual cards.
     const nativeGroups=[...settings.children].filter(el=>el.classList.contains('grp'));
     nativeGroups.forEach(el=>{el.style.padding='14px';el.style.border='1px solid var(--line)';el.style.borderRadius='13px';el.style.background='color-mix(in srgb,var(--panel) 82%,transparent)'});
     const qol=document.createElement('section');qol.id='nero-qol-tools';
@@ -82,8 +81,6 @@
       }catch(e){alert(e.message||'Could not import this settings file')}
       finally{this.value=''}
     };
-
-    // Recently visited is local to this browser profile.
     const home=document.querySelector('#home .hero');
     if(home&&!document.getElementById('nero-recent')){
       const recent=document.createElement('section');recent.className='nero-recent';recent.id='nero-recent';
@@ -101,46 +98,26 @@
     function recordRecent(){
       const input=document.getElementById('url'),value=input&&input.value;
       if(!value||!/^https?:\/\//i.test(value))return;
-      try{
-        const u=new URL(value);if(u.hostname==='nero-tube.onrender.com')return;
-        const title=u.hostname.replace(/^www\./,'');
-        let items=readRecent().filter(x=>x.url!==u.href);items.unshift({url:u.href,title,visitedAt:Date.now()});
-        localStorage.setItem(RECENT_KEY,JSON.stringify(items.slice(0,15)));drawRecent();
-      }catch(e){}
+      try{const u=new URL(value);if(u.hostname==='nero-tube.onrender.com')return;const title=u.hostname.replace(/^www\./,'');let items=readRecent().filter(x=>x.url!==u.href);items.unshift({url:u.href,title,visitedAt:Date.now()});localStorage.setItem(RECENT_KEY,JSON.stringify(items.slice(0,15)));drawRecent()}catch(e){}
     }
     const tabBar=document.getElementById('tabs');
     if(tabBar)new MutationObserver(()=>{if(document.getElementById('url')?.value.startsWith('http'))recordRecent()}).observe(tabBar,{childList:true,subtree:true});
     drawRecent();
-
-    // Clear loading and failure states for proxy startup without pretending to inspect remote page contents.
     const sites=document.getElementById('sites'),siteView=document.getElementById('site');
     function stateView(kind,title,message,action){
       if(!sites)return;let box=document.getElementById('nero-page-state');
       if(!box){box=document.createElement('div');box.id='nero-page-state';box.className='nero-page-state';sites.appendChild(box)}
-      box.replaceChildren();
-      if(kind==='loading'){const spin=document.createElement('div');spin.className='nero-spinner';box.appendChild(spin)}
+      box.replaceChildren();if(kind==='loading'){const spin=document.createElement('div');spin.className='nero-spinner';box.appendChild(spin)}
       const strong=document.createElement('strong');strong.textContent=title;const p=document.createElement('p');p.textContent=message;box.append(strong,p);
       if(action){const actions=document.createElement('div');actions.className='nero-state-actions';const b=document.createElement('button');b.className='ghost';b.type='button';b.textContent=action.label;b.onclick=action.run;actions.appendChild(b);box.appendChild(actions)}
       box.hidden=false;
     }
     function clearState(){const box=document.getElementById('nero-page-state');if(box)box.hidden=true}
     const proxyButton=document.querySelector('.nero-proxy-status');
-    if(proxyButton){
-      const observer=new MutationObserver(()=>{
-        const state=proxyButton.dataset.state;
-        if(state==='pending')stateView('loading','Connecting to NERO proxy','Waking the proxy and preparing the secure browser session…');
-        else if(state==='error')stateView('error','Proxy connection failed',proxyButton.title||'Check your Wisp server settings and try again.');
-        else if(state==='ready')clearState();
-      });
-      observer.observe(proxyButton,{attributes:true,attributeFilter:['data-state']});
-    }
-    if(siteView){
-      const hint=document.createElement('p');hint.className='customization-note';hint.textContent='If a website stays blank, try Reload or check the proxy connection status above.';
-      siteView.appendChild(hint);
-    }
+    if(proxyButton){const observer=new MutationObserver(()=>{const state=proxyButton.dataset.state;if(state==='pending')stateView('loading','Connecting to NERO proxy','Waking the proxy and preparing the secure browser session…');else if(state==='error')stateView('error','Proxy connection failed',proxyButton.title||'Check your Wisp server settings and try again.');else if(state==='ready')clearState()});observer.observe(proxyButton,{attributes:true,attributeFilter:['data-state']})}
+    if(siteView){const hint=document.createElement('p');hint.className='customization-note';hint.textContent='If a website stays blank, try Reload or check the proxy connection status above.';siteView.appendChild(hint)}
   });
   </script>
-
 </head>
 <body></body>
 </html>
