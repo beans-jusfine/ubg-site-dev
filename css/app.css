@@ -9710,3 +9710,14 @@ main:has(>#ai.view.on) {
  #chat-view #global-chat-input{height:44px}
  #chat-view .global-chat-attach,#chat-view #global-chat-send{height:42px;min-height:42px}
 }
+
+
+/* Slightly larger global chat composer at the bottom */
+#chat-view .global-chat-compose{gap:10px;padding:15px}
+#chat-view #global-chat-input{height:54px;padding:0 15px;font-size:15px}
+#chat-view .global-chat-attach,#chat-view #global-chat-send{height:50px;min-height:50px}
+@media(max-width:650px){
+ #chat-view .global-chat-compose{gap:8px;padding:11px}
+ #chat-view #global-chat-input{height:48px}
+ #chat-view .global-chat-attach,#chat-view #global-chat-send{height:46px;min-height:46px}
+}
