@@ -10213,3 +10213,56 @@ body.global-chat-resizing{cursor:col-resize!important;user-select:none!important
 #chat-view .global-chat-timeout-notice>strong:first-child{color:#e05252;font-size:14px;font-weight:850;letter-spacing:.04em;text-transform:uppercase}
 #chat-view .global-chat-timeout-notice>span{color:var(--chat-muted);font-size:12px}
 #chat-view .global-chat-timeout-countdown{font-size:25px;font-variant-numeric:tabular-nums;letter-spacing:.06em}
+
+/* NERO private messages */
+.nero-dm-head{display:flex;align-items:center;justify-content:space-between;gap:14px;margin:0 0 18px}
+.nero-dm-head h1{margin:0;text-transform:lowercase}
+.nero-dm-layout{display:grid;grid-template-columns:minmax(220px,300px) minmax(0,1fr);height:calc(100dvh - 205px);min-height:420px;max-height:820px;border:1px solid var(--line);border-radius:15px;overflow:hidden;background:var(--panel)}
+.nero-dm-sidebar{min-width:0;border-right:1px solid var(--line);overflow:auto;background:color-mix(in srgb,var(--panel) 92%,var(--bg))}
+.nero-dm-sidebar-head{position:sticky;top:0;z-index:1;padding:16px;border-bottom:1px solid var(--line);background:var(--panel);font-size:13px}
+.nero-dm-conversations{padding:7px}
+.nero-dm-conversation{display:flex;align-items:center;gap:10px;width:100%;min-width:0;padding:10px;border:1px solid transparent;border-radius:11px;background:transparent;color:var(--text);text-align:left;cursor:pointer;transition:background .16s,border-color .16s,transform .16s}
+.nero-dm-conversation:hover,.nero-dm-conversation.active{background:color-mix(in srgb,var(--acc) 10%,var(--panel));border-color:color-mix(in srgb,var(--acc) 28%,var(--line))}
+.nero-dm-conversation:active{transform:scale(.985)}
+.nero-dm-avatar{display:grid;flex:none;width:38px;height:38px;place-items:center;border-radius:50%;background:var(--bg);background-position:center;background-size:cover;color:var(--text);font-size:13px;font-weight:800}
+.nero-dm-conversation-detail{display:flex;flex:1;flex-direction:column;gap:4px;min-width:0}
+.nero-dm-conversation-detail strong,.nero-dm-conversation-detail small{overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.nero-dm-conversation-detail strong{font-size:12px}
+.nero-dm-conversation-detail small{color:var(--mute);font-size:10px}
+.nero-dm-conversation time{flex:none;color:var(--mute);font-size:10px}
+.nero-dm-panel{display:flex;min-width:0;min-height:0;flex-direction:column;background:var(--bg)}
+.nero-dm-empty{display:flex;flex:1;flex-direction:column;align-items:center;justify-content:center;gap:8px;padding:25px;text-align:center;color:var(--mute)}
+.nero-dm-empty[hidden],.nero-dm-active[hidden]{display:none}
+.nero-dm-empty strong{color:var(--text);font-size:16px}
+.nero-dm-empty p{margin:0;font-size:12px}
+.nero-dm-empty-icon{display:grid;width:58px;height:58px;place-items:center;margin-bottom:7px;border:1px solid var(--line);border-radius:18px;font-size:25px}
+.nero-dm-active{display:flex;flex:1;flex-direction:column;min-height:0}
+.nero-dm-chat-head{display:flex;align-items:center;gap:10px;flex:none;padding:12px 16px;border-bottom:1px solid var(--line);background:var(--panel)}
+.nero-dm-header-info{display:flex;flex-direction:column;gap:3px}
+.nero-dm-header-info strong{font-size:13px;color:var(--text)}
+.nero-dm-header-info small{font-size:10px;color:var(--mute)}
+.nero-dm-message-list{display:flex;flex:1;flex-direction:column;gap:10px;min-height:0;padding:18px;overflow:auto;overscroll-behavior:contain}
+.nero-dm-message{display:flex;max-width:82%;align-self:flex-start}
+.nero-dm-message.own{align-self:flex-end}
+.nero-dm-bubble{min-width:70px;padding:10px 12px;border:1px solid var(--line);border-radius:14px 14px 14px 4px;background:var(--panel);color:var(--text);overflow-wrap:anywhere}
+.nero-dm-message.own .nero-dm-bubble{border-color:color-mix(in srgb,var(--acc) 38%,var(--line));border-radius:14px 14px 4px 14px;background:color-mix(in srgb,var(--acc) 10%,var(--panel))}
+.nero-dm-bubble p{margin:0;font-size:13px;line-height:1.5;white-space:pre-wrap}
+.nero-dm-message-meta{display:flex;align-items:center;justify-content:flex-end;gap:8px;margin-top:6px;color:var(--mute);font-size:9px}
+.nero-dm-message-meta button{padding:0;border:0;background:transparent;color:var(--mute);font-size:9px;cursor:pointer}
+.nero-dm-message-meta button:hover{color:var(--text)}
+.nero-dm-compose{display:flex;flex:none;gap:8px;padding:12px;border-top:1px solid var(--line);background:var(--panel)}
+.nero-dm-compose input,.nero-dm-search-dialog input{box-sizing:border-box;min-width:0;flex:1;padding:12px;border:1px solid var(--line);border-radius:10px;background:var(--bg);color:var(--text);font:inherit;outline:none}
+.nero-dm-compose input:focus,.nero-dm-search-dialog input:focus{border-color:var(--acc);box-shadow:0 0 0 3px color-mix(in srgb,var(--acc) 15%,transparent)}
+.nero-dm-muted{margin:10px;padding:12px;color:var(--mute);font-size:11px;line-height:1.5}
+.nero-dm-center{text-align:center;margin:auto}
+.nero-dm-search-overlay{position:fixed;inset:0;z-index:2600;display:grid;place-items:center;padding:16px;background:#000a;backdrop-filter:blur(8px)}
+.nero-dm-search-dialog{display:flex;flex-direction:column;gap:12px;width:min(100%,430px);max-height:min(620px,85dvh);padding:17px;border:1px solid var(--line);border-radius:16px;background:var(--panel);color:var(--text);box-shadow:0 24px 80px #0008}
+.nero-dm-search-title{display:flex;align-items:center;justify-content:space-between;font-size:14px}
+.nero-dm-search-title button{border:0;background:transparent;color:var(--mute);font-size:24px;cursor:pointer}
+.nero-dm-search-results{overflow:auto}
+.nero-dm-search-result{display:flex;align-items:center;gap:10px;width:100%;padding:9px;border:0;border-radius:9px;background:transparent;color:var(--text);text-align:left;cursor:pointer}
+.nero-dm-search-result:hover{background:color-mix(in srgb,var(--acc) 10%,var(--panel))}
+.global-chat-open-dm{width:100%;margin-top:10px;padding:9px 12px;border:1px solid var(--acc);border-radius:9px;background:color-mix(in srgb,var(--acc) 10%,var(--panel));color:var(--text);font-weight:700;cursor:pointer}
+.global-chat-open-dm:hover{background:color-mix(in srgb,var(--acc) 18%,var(--panel))}
+@media(max-width:720px){.nero-dm-head{align-items:flex-start;flex-direction:column}.nero-dm-layout{grid-template-columns:minmax(0,1fr);grid-template-rows:minmax(125px,34%) minmax(0,1fr);height:calc(100dvh - 225px);min-height:420px}.nero-dm-sidebar{border-right:0;border-bottom:1px solid var(--line)}.nero-dm-conversations{display:flex;gap:5px;overflow-x:auto}.nero-dm-conversation{flex:0 0 190px}.nero-dm-message-list{padding:12px}.nero-dm-message{max-width:92%}}
+@media(prefers-reduced-motion:reduce){.nero-dm-conversation{transition:none}}

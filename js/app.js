@@ -210,7 +210,7 @@ renderMemories();saveChats();renderChatList();renderHistory();
 $('#ai-send').onclick=ask;ain.onkeydown=e=>{if(e.key==='Enter'&&!e.shiftKey){e.preventDefault();ask()}};
 
 
-const names={home:'new tab',tube:'Movies',games:'games',chat:'global chat',ai:'ai',settings:'settings'};
+const names={home:'new tab',tube:'Movies',games:'games',chat:'global chat',messages:'messages',ai:'ai',settings:'settings'};
 let tabs=[],cur=0,nid=0;
 const cT=()=>tabs.find(x=>x.id===cur);
 function newTab(v){v=v||'home';const t={id:++nid,v,src:'',u:'',title:names[v]};tabs.push(t);cur=t.id;draw()}
