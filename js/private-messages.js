@@ -7,7 +7,7 @@
   const fullTime=value=>{const d=new Date(value);return Number.isFinite(d.getTime())?d.toLocaleString():''};
   const profileName=p=>p?.display_name||('@'+(p?.username||'member'));
   function avatar(p){const el=document.createElement('span');el.className='nero-dm-avatar';if(p?.avatar_path)el.style.backgroundImage='url('+client.storage.from('profile-avatars').getPublicUrl(p.avatar_path).data.publicUrl+')';else el.textContent=(p?.display_name||p?.username||'?').slice(0,1).toUpperCase();return el}
-  function showMessagesView(){document.querySelector('nav button[data-v="messages"]')?.click()}
+  function showMessagesView(){document.querySelector('nav button[data-v="chat"]')?.click()}
   function notice(message){messageList.replaceChildren();const p=document.createElement('p');p.className='nero-dm-muted nero-dm-center';p.textContent=message;messageList.append(p)}
   async function loadProfiles(){const {data,error}=await client.from('profiles').select('id,username,display_name,avatar_path').order('username');if(error)throw error;profileCache=new Map((data||[]).map(p=>[p.id,p]))}
   async function ensureConversation(otherId){
