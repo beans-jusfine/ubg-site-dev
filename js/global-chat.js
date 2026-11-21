@@ -6,13 +6,22 @@
   const isOwnerUsername=username=>norm(username)==='beans';
   function makeOwnerBadge(){const badge=document.createElement('span');badge.className='nero-owner-badge';badge.textContent='♛ OWNER';badge.setAttribute('aria-label','Owner');return badge}
   const OWNER_USER_ID='17eb84cd-ae0a-4b59-b6ca-ddd1290782be';
-  let activeModeration=null,moderationExpiryTimer=null;
+  let activeModeration=null,moderationExpiryTimer=null,moderationCountdownTimer=null;
+  const timeoutNotice=document.createElement('div');timeoutNotice.className='global-chat-timeout-notice';timeoutNotice.hidden=true;timeoutNotice.setAttribute('role','status');timeoutNotice.setAttribute('aria-live','polite');form.before(timeoutNotice);
   function moderationActive(record){return !!record&&(record.action==='ban'||(record.expires_at&&Date.parse(record.expires_at)>Date.now()))}
+  function updateTimeoutNotice(){
+    if(!activeModeration||activeModeration.action!=='timeout'||!moderationActive(activeModeration)){timeoutNotice.textContent='';return}
+    const seconds=Math.max(0,Math.ceil((Date.parse(activeModeration.expires_at)-Date.now())/1000));
+    const days=Math.floor(seconds/86400),hours=Math.floor(seconds%86400/3600),minutes=Math.floor(seconds%3600/60),secs=seconds%60;
+    const time=(days?days+'d ':'')+(days||hours?String(hours).padStart(2,'0')+':':'')+String(minutes).padStart(2,'0')+':'+String(secs).padStart(2,'0');
+    timeoutNotice.replaceChildren();const heading=document.createElement('strong'),detail=document.createElement('span'),clock=document.createElement('strong');heading.textContent='You’re timed out';detail.textContent='You can send messages again in';clock.className='global-chat-timeout-countdown';clock.textContent=time;timeoutNotice.append(heading,detail,clock);
+  }
   function applyModerationState(){
     const muted=activeModeration?.action==='timeout'&&moderationActive(activeModeration);
-    [input,attachButton,emojiButton,gifButton].forEach(control=>{if(control)control.disabled=!!muted});
-    if(moderationExpiryTimer)clearTimeout(moderationExpiryTimer);
-    if(muted){const remaining=Date.parse(activeModeration.expires_at)-Date.now();moderationExpiryTimer=setTimeout(()=>loadOwnModeration().catch(e=>console.warn('NERO moderation:',e.message)),Math.max(1000,remaining+250))}
+    form.hidden=!!muted;timeoutNotice.hidden=!muted;
+    [input,attachButton,emojiButton,gifButton,fileInput].forEach(control=>{if(control)control.disabled=!!muted});
+    if(moderationExpiryTimer)clearTimeout(moderationExpiryTimer);if(moderationCountdownTimer)clearInterval(moderationCountdownTimer);
+    if(muted){updateTimeoutNotice();moderationCountdownTimer=setInterval(updateTimeoutNotice,1000);const remaining=Date.parse(activeModeration.expires_at)-Date.now();moderationExpiryTimer=setTimeout(()=>loadOwnModeration().catch(e=>console.warn('NERO moderation:',e.message)),Math.max(1000,remaining+250))}
   }
   async function loadOwnModeration(){
     if(!user?.id||!client)return null;

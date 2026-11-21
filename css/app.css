@@ -10205,3 +10205,11 @@ body.global-chat-resizing{cursor:col-resize!important;user-select:none!important
 .global-chat-moderation-controls>button:disabled{opacity:.55;cursor:wait;transform:none}
 .global-chat-moderation-controls>small{color:var(--mute);font-size:10px}
 .global-chat-message-body .global-chat-mention.everyone{padding:1px 5px;border-radius:5px;background:color-mix(in srgb,#d6a84b 20%,transparent);color:#d6a84b;font-weight:800}
+
+
+/* Timed-out members see a live countdown instead of the message composer. */
+#chat-view .global-chat-timeout-notice{box-sizing:border-box;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:7px;width:100%;min-height:92px;padding:16px;border:1px solid color-mix(in srgb,#e05252 42%,var(--chat-line));border-radius:12px;background:color-mix(in srgb,#e05252 9%,var(--chat-panel));color:var(--chat-text);text-align:center}
+#chat-view .global-chat-timeout-notice[hidden]{display:none}
+#chat-view .global-chat-timeout-notice>strong:first-child{color:#e05252;font-size:14px;font-weight:850;letter-spacing:.04em;text-transform:uppercase}
+#chat-view .global-chat-timeout-notice>span{color:var(--chat-muted);font-size:12px}
+#chat-view .global-chat-timeout-countdown{font-size:25px;font-variant-numeric:tabular-nums;letter-spacing:.06em}
