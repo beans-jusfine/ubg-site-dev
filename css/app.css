@@ -9687,3 +9687,26 @@ main:has(>#ai.view.on) {
 /* Keep the chat view hidden unless its NERO page is active. */
 #chat-view{display:none}
 #chat-view.on{display:flex}
+
+
+/* Global chat sizing and live typing status */
+#chat-view{width:100%;max-width:none;min-height:calc(100vh - 82px);height:calc(100vh - 82px);gap:18px}
+#chat-view .global-chat-notice{display:none!important}
+#chat-view .global-chat-head{flex:none}
+#chat-view .global-chat-room{flex:1;min-height:480px;gap:10px}
+#chat-view .global-chat-messages{min-height:360px;padding:22px;gap:13px}
+#chat-view .global-chat-message{max-width:min(86%,820px);padding:12px 15px}
+#chat-view .global-chat-message-body{font-size:14px;line-height:1.6}
+#chat-view .global-chat-typing{flex:none;min-height:20px;padding:0 16px;color:#c4baff;font-size:12px;letter-spacing:.01em}
+#chat-view .global-chat-typing[hidden]{display:none}
+#chat-view .global-chat-compose{flex:none;padding:13px}
+#chat-view #global-chat-input{height:48px;font-size:14px}
+#chat-view .global-chat-attach,#chat-view #global-chat-send{height:46px;min-height:46px}
+@media(max-width:650px){
+ #chat-view{height:calc(100dvh - 100px);min-height:520px;gap:12px}
+ #chat-view .global-chat-room{min-height:420px}
+ #chat-view .global-chat-messages{min-height:300px;padding:14px}
+ #chat-view .global-chat-compose{padding:9px}
+ #chat-view #global-chat-input{height:44px}
+ #chat-view .global-chat-attach,#chat-view #global-chat-send{height:42px;min-height:42px}
+}
