@@ -10029,3 +10029,11 @@ body.global-chat-viewer-open{overflow:hidden}
 #chat-view .global-chat-member-dot.online{background:#35c979;box-shadow:0 0 0 3px #35c97920}
 #chat-view .global-chat-members-empty,#chat-view .global-chat-members-loading{margin:3px 12px 9px;color:var(--chat-muted);font-size:11px}
 @media(max-width:760px){#chat-view .global-chat-layout{flex-direction:column}#chat-view .global-chat-members{flex:0 0 auto;width:100%;max-height:260px}#chat-view .global-chat-room{width:100%}}
+
+
+/* Give the global chat the full content width and more vertical room. */
+#chat-view .global-chat-head,#chat-view .global-chat-join,#chat-view .global-chat-notice,#chat-view .global-chat-layout,#chat-view .global-chat-room{width:100%;max-width:none}
+#chat-view .global-chat-layout{display:block;min-width:0}
+#chat-view .global-chat-room{height:calc(100dvh - 225px);min-height:460px;max-height:calc(100dvh - 150px)}
+#chat-view .global-chat-messages{padding:22px;gap:15px}
+@media(max-width:600px){#chat-view .global-chat-room{height:calc(100dvh - 245px);min-height:340px;max-height:calc(100dvh - 160px)}#chat-view .global-chat-messages{padding:12px;gap:11px}}
