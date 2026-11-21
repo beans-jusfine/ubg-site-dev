@@ -194,7 +194,7 @@
   attachButton.addEventListener('click',()=>fileInput.click());fileInput.addEventListener('change',async()=>{const file=fileInput.files?.[0];fileInput.value='';if(!file)return;if(!joined||!user||!profile){setStatus('Sign in before sharing an image','error');return}
     if(!['image/jpeg','image/png','image/webp','image/gif'].includes(file.type)){setStatus('Use a JPG, PNG, WEBP, or GIF image','error');return}if(file.size>2*1024*1024){setStatus('Images must be 2 MB or smaller','error');return}
     attachButton.disabled=true;setStatus('Uploading image…','pending');try{const path=user.id+'/'+crypto.randomUUID()+'-'+file.name.replace(/[^a-zA-Z0-9._-]/g,'_');const {error:up}=await client.storage.from('chat-images').upload(path,file,{contentType:file.type,upsert:false});if(up)throw up;
-      const {error}=await client.from('chat_messages').insert({guest_id:user.id,user_id:user.id,username:profile.username,content:'',image_path:path});if(error)throw error;setStatus('Image sent','connected')
+      const {error}=await client.from('chat_messages').insert({guest_id:user.id,user_id:user.id,username:profile.username,content:'',image_path:path,reply_to:pendingReply?.id||null});if(error)throw error;setStatus('Image sent','connected')
     }catch(err){setStatus(err.message||'Image upload failed','error')}finally{attachButton.disabled=false}});
   input.addEventListener('input',()=>{if(input.value.trim())announceTyping();else stopTyping();renderEmojiAutocomplete()});input.addEventListener('blur',stopTyping);
   window.addEventListener('nero:auth-change',async e=>{user=e.detail?.user||null;profile=e.detail?.profile||null;if(user&&profile){loadMentionCount();await connect()}else{clearMentionCount();await disconnect();setStatus('Sign in to use chat')}});
