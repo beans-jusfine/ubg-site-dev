@@ -2,7 +2,7 @@
   const client=window.NERO_SUPABASE,$=s=>document.querySelector(s);
   const list=$('#nero-dm-conversations'),empty=$('#nero-dm-empty'),active=$('#nero-dm-active'),head=$('#nero-dm-chat-head'),messageList=$('#nero-dm-message-list'),form=$('#nero-dm-form'),input=$('#nero-dm-input'),newButton=$('#nero-dm-new');
   if(!client||!list||!form)return;
-  let user=window.NERO_AUTH?.user||null,activeConversation=null,activeOther=null,realtime=null,profileCache=new Map(),conversations=[],refreshPending=false;
+  let user=window.NERO_AUTH?.user||null,activeConversation=null,activeOther=null,realtime=null,profileCache=new Map(),conversations=[],hiddenConversationIds=new Set(),refreshPending=false;
   const shortTime=value=>{const d=new Date(value);return Number.isFinite(d.getTime())?d.toLocaleTimeString([],{hour:'numeric',minute:'2-digit'}):''};
   const fullTime=value=>{const d=new Date(value);return Number.isFinite(d.getTime())?d.toLocaleString():''};
   const profileName=p=>p?.display_name||('@'+(p?.username||'member'));
@@ -28,20 +28,30 @@
   }
   function renderConversationList(latest){
     list.replaceChildren();
-    if(!conversations.length){const p=document.createElement('p');p.className='nero-dm-muted';p.textContent='No private conversations yet. Start one with a member.';list.append(p);return}
+    if(!conversations.length){const p=document.createElement('p');p.className='nero-dm-muted';p.textContent='No direct messages yet. Search for a member to start or reopen a conversation.';list.append(p);return}
     conversations.forEach(c=>{
       const otherId=c.user_one===user.id?c.user_two:c.user_one,p=profileCache.get(otherId)||{username:'member'},last=latest.get(c.id);
+      const row=document.createElement('div');row.className='nero-dm-conversation-row';
       const b=document.createElement('button');b.type='button';b.className='nero-dm-conversation'+(activeConversation?.id===c.id?' active':'');b.addEventListener('click',()=>openConversation(otherId));
       b.append(avatar(p));const detail=document.createElement('span');detail.className='nero-dm-conversation-detail';
       const name=document.createElement('strong');name.textContent=profileName(p);
       const preview=document.createElement('small');preview.textContent=last?((last.sender_id===user.id?'You: ':'')+last.content):'Start a conversation';
       const time=document.createElement('time');time.textContent=last?shortTime(last.created_at):'';time.title=last?fullTime(last.created_at):'';
-      detail.append(name,preview);b.append(detail,time);list.append(b);
+      detail.append(name,preview);b.append(detail,time);
+      const hide=document.createElement('button');hide.type='button';hide.className='nero-dm-hide';hide.textContent='×';hide.title='Hide this direct message';hide.setAttribute('aria-label','Hide direct messages with '+(p.username||'this member'));
+      hide.addEventListener('click',async()=>{hide.disabled=true;try{const {error}=await client.from('dm_hidden_conversations').insert({user_id:user.id,conversation_id:c.id});if(error&&error.code!=='23505')throw error;hiddenConversationIds.add(c.id);conversations=conversations.filter(item=>item.id!==c.id);renderConversationList(latest)}catch(e){alert(e.message||'Could not hide this conversation.');hide.disabled=false}});
+      row.append(b,hide);list.append(row);
     });
   }
   async function loadConversations(){
     if(!user?.id){list.replaceChildren();const p=document.createElement('p');p.className='nero-dm-muted';p.textContent='Sign in to use direct messages.';list.append(p);return}
-    const {data,error}=await client.from('dm_conversations').select('id,user_one,user_two,created_at');if(error)throw error;conversations=data||[];
+    const [conversationResult,hiddenResult]=await Promise.all([
+      client.from('dm_conversations').select('id,user_one,user_two,created_at'),
+      client.from('dm_hidden_conversations').select('conversation_id').eq('user_id',user.id)
+    ]);
+    if(conversationResult.error)throw conversationResult.error;if(hiddenResult.error)throw hiddenResult.error;
+    hiddenConversationIds=new Set((hiddenResult.data||[]).map(item=>item.conversation_id));
+    conversations=(conversationResult.data||[]).filter(c=>!hiddenConversationIds.has(c.id));
     if(!conversations.length){renderConversationList(new Map());return}
     const ids=conversations.map(c=>c.id),r=await client.from('dm_messages').select('id,conversation_id,sender_id,content,created_at').in('conversation_id',ids).order('created_at',{ascending:false}).limit(500);if(r.error)throw r.error;
     const latest=new Map();(r.data||[]).forEach(m=>{if(!latest.has(m.conversation_id))latest.set(m.conversation_id,m)});
@@ -73,7 +83,13 @@
     if(!user?.id){window.NERO_ACCOUNT?.open();return}if(!profileCache.size)await loadProfiles();
     activeOther=profileCache.get(otherId);if(!activeOther)throw new Error('That member could not be found.');activeConversation=null;
     showMessagesView();empty.hidden=true;active.hidden=false;input.disabled=false;updateHeader();notice('Loading messages…');
-    try{activeConversation=await ensureConversation(otherId);await Promise.all([loadMessages(),loadConversations()]);input.focus()}catch(e){notice(e.message||'Could not open this conversation.')}
+    try{
+      activeConversation=await ensureConversation(otherId);
+      const {error:unhideError}=await client.from('dm_hidden_conversations').delete().eq('user_id',user.id).eq('conversation_id',activeConversation.id);
+      if(unhideError)throw unhideError;
+      hiddenConversationIds.delete(activeConversation.id);
+      await Promise.all([loadMessages(),loadConversations()]);input.focus()
+    }catch(e){notice(e.message||'Could not open this conversation.')}
   }
   async function openNewMessage(){
     if(!user?.id){window.NERO_ACCOUNT?.open();return}try{if(!profileCache.size)await loadProfiles()}catch(e){alert(e.message);return}

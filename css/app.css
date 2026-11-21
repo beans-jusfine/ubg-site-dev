@@ -10330,3 +10330,10 @@ body.global-chat-resizing{cursor:col-resize!important;user-select:none!important
 @media(max-width:600px){
   #chat-view .global-chat-room{height:calc(100dvh - 170px);min-height:340px;max-height:calc(100dvh - 120px)}
 }
+
+/* Per-account direct-message hide controls */
+.nero-dm-conversation-row{display:flex;align-items:center;gap:3px;margin:2px 0}
+.nero-dm-conversation-row .nero-dm-conversation{flex:1;width:auto;min-width:0}
+.nero-dm-hide{display:grid;flex:none;width:28px;height:28px;place-items:center;border:1px solid transparent;border-radius:8px;background:transparent;color:var(--mute);font-size:19px;line-height:1;cursor:pointer;opacity:.65;transition:background .16s,color .16s,opacity .16s}
+.nero-dm-hide:hover{background:color-mix(in srgb,var(--acc) 12%,var(--panel));border-color:var(--line);color:var(--text);opacity:1}
+@media(hover:hover){.nero-dm-conversation-row .nero-dm-hide{opacity:0}.nero-dm-conversation-row:hover .nero-dm-hide,.nero-dm-conversation-row:focus-within .nero-dm-hide{opacity:1}}
