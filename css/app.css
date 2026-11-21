@@ -1335,3 +1335,15 @@ main:has(>#ai.view.on) {
 .global-chat-empty{margin:auto;color:var(--mute);text-align:center;font-size:13px}
 .global-chat-compose{display:flex;gap:9px;padding:12px;border-top:1px solid var(--line);background:var(--panel)}
 @media(max-width:600px){#chat-view{padding:4px}.global-chat-room{height:65vh;min-height:320px}.global-chat-message{max-width:94%}.global-chat-join-row{flex-direction:column}.global-chat-join-row .btn{width:100%}}
+
+
+/* NERO global chat image and mention controls */
+.global-chat-compose{align-items:center}
+.global-chat-attach{flex:none;width:42px;height:42px;border:1px solid var(--line);border-radius:10px;color:var(--text);font-size:24px;line-height:1}
+.global-chat-attach:hover{border-color:var(--acc);color:var(--acc)}
+.global-chat-attach:disabled{opacity:.45;cursor:wait}
+.global-chat-image{display:block;max-width:min(420px,100%);max-height:320px;object-fit:contain;border:1px solid var(--line);border-radius:12px;background:var(--bg);cursor:zoom-in}
+.global-chat-mention{color:var(--acc);font-weight:750;background:color-mix(in srgb,var(--acc) 13%,transparent);border-radius:4px;padding:0 2px}
+.global-chat-mention.self{background:color-mix(in srgb,var(--acc) 28%,transparent);text-decoration:underline}
+.global-chat-status.mentioned{color:var(--acc);border-color:var(--acc)}
+@media(max-width:600px){.global-chat-compose{gap:6px;padding:9px}.global-chat-attach{width:40px;height:40px}.global-chat-image{max-height:240px}}

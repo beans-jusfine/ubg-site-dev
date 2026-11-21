@@ -2,20 +2,25 @@
   const $ = s => document.querySelector(s), api = String(window.NERO_CONFIG?.chat || '').replace(/\/$/, '');
   const status=$('#global-chat-status'), joinPanel=$('#global-chat-join'), room=$('#global-chat-room');
   const nameInput=$('#global-chat-name'), messages=$('#global-chat-messages'), form=$('#global-chat-form'), input=$('#global-chat-input');
-  const USER_KEY='nero.globalChat.username.v1', GUEST_KEY='nero.globalChat.guestId.v1', seen=new Set();
+  const fileInput=$('#global-chat-file'), attachButton=$('#global-chat-attach'), usersList=$('#global-chat-users');
+  const USER_KEY='nero.globalChat.username.v1', GUEST_KEY='nero.globalChat.guestId.v1', seen=new Set(), knownUsers=new Map();
   let socket=null, joined=false, reconnectTimer=null;
   const guestId=(()=>{let id=localStorage.getItem(GUEST_KEY);if(!id){id=crypto.randomUUID?crypto.randomUUID():'guest-'+Math.random().toString(36).slice(2);localStorage.setItem(GUEST_KEY,id)}return id})();
   nameInput.value=localStorage.getItem(USER_KEY)||'';
   function setStatus(t,s){status.textContent=t;status.dataset.state=s||'offline'}
+  function handleFor(name){return String(name||'').toLowerCase().replace(/[^a-z0-9_-]/g,'')}
+  function rememberUser(name){if(!name)return;const key=handleFor(name);if(key&&key!==handleFor(nameInput.value)){knownUsers.set(key,name);usersList.replaceChildren();for(const [handle,label] of knownUsers){const o=document.createElement('option');o.value='@'+handle;o.label=label;usersList.append(o)}}}
   function addMessage(m){
-    if(!m||!m.id||seen.has(String(m.id)))return;seen.add(String(m.id));
+    if(!m||!m.id||seen.has(String(m.id)))return;seen.add(String(m.id));rememberUser(m.username);
     messages.querySelector('.global-chat-empty')?.remove();
     const row=document.createElement('article');row.className='global-chat-message'+(m.guestId===guestId?' mine':'');
     const meta=document.createElement('div');meta.className='global-chat-message-meta';
     const who=document.createElement('span');who.className='global-chat-message-name';who.textContent=m.username||'Guest';
     const time=document.createElement('time'),date=new Date(m.createdAt);time.dateTime=date.toISOString();time.textContent=date.toLocaleTimeString([],{hour:'numeric',minute:'2-digit'});
-    meta.append(who,time);const body=document.createElement('div');body.className='global-chat-message-body';body.textContent=m.content||'';row.append(meta,body);messages.append(row);
-    while(messages.children.length>120)messages.firstElementChild.remove();messages.scrollTop=messages.scrollHeight;
+    meta.append(who,time);row.append(meta);
+    if(m.imageId){const img=document.createElement('img');img.className='global-chat-image';img.src=api+'/images/'+encodeURIComponent(m.imageId);img.alt='Image shared by '+(m.username||'a guest');img.loading='lazy';img.addEventListener('click',()=>window.open(img.src,'_blank','noopener'));row.append(img)}
+    if(m.content){const body=document.createElement('div');body.className='global-chat-message-body';const re=/@([a-z0-9_-]{1,24})/gi;let last=0,match;while((match=re.exec(m.content))){body.append(document.createTextNode(m.content.slice(last,match.index)));const key=match[1].toLowerCase(),span=document.createElement('span');span.className='global-chat-mention';span.textContent=match[0];if(key===handleFor(nameInput.value))span.classList.add('self');body.append(span);last=re.lastIndex}body.append(document.createTextNode(m.content.slice(last)));row.append(body)}
+    messages.append(row);while(messages.children.length>120)messages.firstElementChild.remove();messages.scrollTop=messages.scrollHeight;
   }
   async function history(){const r=await fetch(api+'/messages?limit=80');if(!r.ok)throw Error('Could not load chat history');const d=await r.json();(d.messages||[]).forEach(addMessage);if(!messages.children.length){const p=document.createElement('p');p.className='global-chat-empty';p.textContent='No messages yet. Start the conversation!';messages.append(p)}}
   async function connect(username){
@@ -25,7 +30,9 @@
     socket.addEventListener('open',()=>{socket.send(JSON.stringify({type:'join',username,guestId}));history().catch(e=>setStatus(e.message,'error'))});
     socket.addEventListener('message',e=>{let d;try{d=JSON.parse(e.data)}catch{return}
       if(d.type==='ready'){joined=true;setStatus('Connected as '+username,'connected');joinPanel.hidden=true;room.hidden=false}
-      else if(d.type==='message')addMessage(d.message);else if(d.type==='error')setStatus(d.message||'Chat error','error')});
+      else if(d.type==='message')addMessage(d.message);
+      else if(d.type==='mention'){setStatus(d.from+' mentioned you','connected');status.classList.add('mentioned');}
+      else if(d.type==='error')setStatus(d.message||'Chat error','error')});
     socket.addEventListener('close',()=>{const wasJoined=joined;joined=false;if(!wasJoined){setStatus('Could not connect. Check the chat server settings.','error');return}setStatus('Disconnected — reconnecting…','error');reconnectTimer=setTimeout(()=>{if(document.visibilityState!=='hidden')connect(username)},4000)});
     socket.addEventListener('error',()=>setStatus('Connection failed','error'));
   }
@@ -36,6 +43,9 @@
   });
   nameInput.addEventListener('keydown',e=>{if(e.key==='Enter')$('#global-chat-join-btn').click()});
   form.addEventListener('submit',e=>{e.preventDefault();const content=input.value.trim();if(!content||!joined||socket?.readyState!==WebSocket.OPEN)return;socket.send(JSON.stringify({type:'message',content}));input.value=''});
+  attachButton.addEventListener('click',()=>fileInput.click());
+  fileInput.addEventListener('change',async()=>{const file=fileInput.files?.[0];fileInput.value='';if(!file)return;if(!joined||socket?.readyState!==WebSocket.OPEN){setStatus('Join chat before sharing an image','error');return}if(!['image/jpeg','image/png','image/webp','image/gif'].includes(file.type)){setStatus('Use a JPG, PNG, WEBP, or GIF image','error');return}if(file.size>2*1024*1024){setStatus('Images must be 2 MB or smaller','error');return}attachButton.disabled=true;setStatus('Uploading image…','pending');try{const r=await fetch(api+'/images',{method:'POST',headers:{'Content-Type':file.type,'X-Nero-Guest':guestId},body:file});const d=await r.json();if(!r.ok)throw Error(d.error||'Image upload failed');socket.send(JSON.stringify({type:'image',imageId:d.imageId}));setStatus('Image sent','connected')}catch(e){setStatus(e.message||'Image upload failed','error')}finally{attachButton.disabled=false}});
+  input.addEventListener('input',()=>{if(input.value.includes('@')){for(const m of input.value.matchAll(/@([a-z0-9_-]*)$/gi)){if(!m[1]){usersList.replaceChildren();for(const [handle,label] of knownUsers){const o=document.createElement('option');o.value='@'+handle;o.label=label;usersList.append(o)}}}}});
   document.querySelector('nav button[data-v="chat"]')?.addEventListener('click',()=>{if(!joined)nameInput.focus()});
   window.addEventListener('beforeunload',()=>socket?.close());
 })();
