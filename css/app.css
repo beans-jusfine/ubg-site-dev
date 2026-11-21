@@ -9896,20 +9896,36 @@ nav button[data-v="chat"]{position:relative}
 
 
 
-/* Discord-like emoji picker */
+
+/* Discord-inspired emoji + KLIPY GIF pickers */
 #chat-view .global-chat-compose{position:relative}
-#chat-view .global-chat-emoji{flex:none;width:42px;height:42px;padding:0;font-size:23px;line-height:1}
-#chat-view .global-chat-emoji:hover{border-color:var(--acc);color:var(--acc)}
-#chat-view .global-chat-emoji-picker{position:absolute;left:10px;bottom:66px;z-index:25;width:min(350px,calc(100vw - 52px));max-height:min(410px,55vh);display:flex;flex-direction:column;gap:9px;padding:12px;border:1px solid var(--line);border-radius:13px;background:var(--panel);color:var(--text);box-shadow:0 18px 48px #0007}
-#chat-view .global-chat-emoji-picker[hidden]{display:none}
-#chat-view .global-chat-emoji-top{display:flex;align-items:center;justify-content:space-between;gap:10px}
-#chat-view .global-chat-emoji-top strong{font-size:13px}
-#chat-view .global-chat-emoji-top input{width:65%;min-width:0;padding:8px 10px;border:1px solid var(--line);border-radius:8px;background:var(--bg);color:var(--text);font:inherit;font-size:12px}
-#chat-view .global-chat-emoji-cats{display:flex;gap:5px;overflow-x:auto;padding-bottom:3px}
-#chat-view .global-chat-emoji-cats button{flex:none;padding:6px 8px;border:1px solid var(--line);border-radius:7px;background:transparent;color:var(--mute);font-size:10px;cursor:pointer}
-#chat-view .global-chat-emoji-cats button.active,#chat-view .global-chat-emoji-cats button:hover{border-color:var(--acc);color:var(--acc);background:color-mix(in srgb,var(--acc) 10%,var(--panel))}
-#chat-view .global-chat-emoji-grid{display:grid;grid-template-columns:repeat(8,minmax(0,1fr));gap:3px;overflow:auto;min-height:80px}
-#chat-view .global-chat-emoji-grid button{display:grid;place-items:center;min-width:0;aspect-ratio:1;border:0;border-radius:7px;background:transparent;color:var(--text);font-size:23px;cursor:pointer}
-#chat-view .global-chat-emoji-grid button:hover{background:color-mix(in srgb,var(--acc) 15%,var(--panel));transform:scale(1.08)}
-#chat-view .global-chat-emoji-empty{grid-column:1/-1;padding:20px;text-align:center;color:var(--mute);font-size:12px}
-@media(max-width:600px){#chat-view .global-chat-emoji-picker{left:4px;bottom:62px}#chat-view .global-chat-emoji-grid{grid-template-columns:repeat(7,minmax(0,1fr))}}
+#chat-view .global-chat-emoji,#chat-view .global-chat-gif{flex:none;height:46px;min-width:42px;padding:0 9px;border:1px solid var(--chat-line);border-radius:10px;background:var(--chat-bg);color:var(--chat-text);cursor:pointer}
+#chat-view .global-chat-emoji{font-size:23px}
+#chat-view .global-chat-gif{font-size:12px;font-weight:800;letter-spacing:.04em}
+#chat-view .global-chat-emoji:hover,#chat-view .global-chat-gif:hover{border-color:var(--chat-accent);color:var(--chat-accent)}
+#chat-view .global-chat-emoji-picker,#chat-view .global-chat-gif-picker{position:absolute;left:8px;bottom:calc(100% + 8px);z-index:50;width:min(370px,calc(100vw - 44px));max-height:min(440px,60vh);display:flex;flex-direction:column;gap:10px;padding:12px;border:1px solid var(--chat-line);border-radius:13px;background:var(--chat-panel);color:var(--chat-text);box-shadow:0 18px 48px #0008}
+#chat-view .global-chat-emoji-picker[hidden],#chat-view .global-chat-gif-picker[hidden],#chat-view .global-chat-emoji-autocomplete[hidden]{display:none}
+#chat-view .global-chat-picker-top{display:flex;align-items:center;justify-content:space-between;gap:10px}
+#chat-view .global-chat-picker-top strong{font-size:14px;font-weight:700}
+#chat-view .global-chat-picker-top input{width:72%;min-width:0;padding:9px 10px;border:1px solid var(--chat-line);border-radius:8px;background:var(--chat-bg);color:var(--chat-text);font:inherit;font-size:12px}
+#chat-view .global-chat-emoji-cats{display:flex;gap:5px;overflow-x:auto;padding-bottom:3px;scrollbar-width:thin}
+#chat-view .global-chat-emoji-cats button{flex:none;padding:7px 9px;border:1px solid var(--chat-line);border-radius:8px;background:transparent;color:var(--chat-muted);font-size:11px;cursor:pointer}
+#chat-view .global-chat-emoji-cats button.active,#chat-view .global-chat-emoji-cats button:hover{border-color:var(--chat-accent);color:var(--chat-accent);background:color-mix(in srgb,var(--chat-accent) 12%,var(--chat-panel))}
+#chat-view .global-chat-emoji-grid{display:grid;grid-template-columns:repeat(8,minmax(0,1fr));gap:3px;overflow:auto;min-height:100px;padding:2px}
+#chat-view .global-chat-emoji-grid button{display:grid;place-items:center;min-width:0;aspect-ratio:1;border:0;border-radius:7px;background:transparent;color:var(--chat-text);font-size:25px;cursor:pointer}
+#chat-view .global-chat-emoji-grid button:hover{background:color-mix(in srgb,var(--chat-accent) 15%,var(--chat-panel));transform:scale(1.08)}
+#chat-view .global-chat-emoji-empty{grid-column:1/-1;padding:20px;text-align:center;color:var(--chat-muted);font-size:12px}
+#chat-view .global-chat-emoji-autocomplete{position:absolute;left:12px;bottom:calc(100% + 8px);z-index:55;width:min(290px,calc(100vw - 60px));padding:6px;border:1px solid var(--chat-line);border-radius:10px;background:var(--chat-panel);box-shadow:0 12px 32px #0008}
+#chat-view .global-chat-emoji-autocomplete button{display:flex;align-items:center;gap:10px;width:100%;padding:7px;border:0;border-radius:7px;background:transparent;color:var(--chat-text);text-align:left;cursor:pointer}
+#chat-view .global-chat-emoji-autocomplete button.active,#chat-view .global-chat-emoji-autocomplete button:hover{background:color-mix(in srgb,var(--chat-accent) 14%,var(--chat-panel))}
+#chat-view .global-chat-emoji-autocomplete button span{font-size:22px}
+#chat-view .global-chat-emoji-autocomplete button small{color:var(--chat-muted);font-size:11px}
+#chat-view .global-chat-gif-results{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:7px;overflow:auto;min-height:100px}
+#chat-view .global-chat-gif-item{position:relative;min-width:0;min-height:78px;overflow:hidden;padding:0;border:1px solid var(--chat-line);border-radius:8px;background:var(--chat-bg);cursor:pointer}
+#chat-view .global-chat-gif-item img{display:block;width:100%;height:96px;object-fit:cover}
+#chat-view .global-chat-gif-item span{display:block;overflow:hidden;padding:4px 5px;color:var(--chat-muted);font-size:10px;text-overflow:ellipsis;white-space:nowrap}
+#chat-view .global-chat-gif-message{grid-column:1/-1;margin:0;padding:25px 12px;color:var(--chat-muted);font-size:12px;text-align:center}
+#chat-view .global-chat-klipy-credit{padding-top:7px;border-top:1px solid var(--chat-line);color:var(--chat-muted);font-size:10px;text-align:right}
+#chat-view .global-chat-wumboji{font-size:40px;line-height:1.25;letter-spacing:2px}
+#chat-view .global-chat-gif-message-image{max-width:min(100%,480px);max-height:340px;object-fit:contain}
+@media(max-width:600px){#chat-view .global-chat-emoji-picker,#chat-view .global-chat-gif-picker{left:4px;width:min(370px,calc(100vw - 32px));max-height:55vh}#chat-view .global-chat-emoji-grid{grid-template-columns:repeat(7,minmax(0,1fr))}#chat-view .global-chat-emoji,#chat-view .global-chat-gif{height:42px;min-width:36px}}
