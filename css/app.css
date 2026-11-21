@@ -10063,3 +10063,21 @@ body.global-chat-viewer-open{overflow:hidden}
 #chat-view .global-chat-members-empty,#chat-view .global-chat-members-loading{margin:3px 12px 9px;color:var(--chat-muted);font-size:11px}
 body.global-chat-resizing{cursor:col-resize!important;user-select:none!important}
 @media(max-width:760px){#chat-view .global-chat-layout{flex-direction:column;gap:10px}#chat-view .global-chat-room{width:100%;flex:none}#chat-view .global-chat-splitter{display:none}#chat-view .global-chat-members{width:100%;max-width:none;max-height:260px;flex:none}}
+
+
+/* Final layout guard: keep the composer fully visible at every roster width. */
+#chat-view .global-chat-layout{box-sizing:border-box;gap:0;min-width:0;overflow:visible}
+#chat-view .global-chat-room{box-sizing:border-box;min-width:0;min-height:320px;height:calc(100dvh - 220px);max-height:calc(100dvh - 150px);overflow:hidden;display:flex;flex-direction:column}
+#chat-view .global-chat-messages{box-sizing:border-box;flex:1 1 0;min-height:0;width:100%;min-width:0;overflow:auto}
+#chat-view .global-chat-compose{box-sizing:border-box;display:flex;flex:0 0 auto;align-items:center;width:100%;max-width:100%;min-width:0;min-height:68px;overflow:visible;gap:8px;padding:10px 12px calc(10px + env(safe-area-inset-bottom))}
+#chat-view .global-chat-compose #global-chat-input{box-sizing:border-box;display:block;flex:1 1 0;width:0;min-width:0;max-width:100%;height:44px}
+#chat-view .global-chat-compose .global-chat-attach,#chat-view .global-chat-compose #global-chat-send{box-sizing:border-box;flex:0 0 auto;white-space:nowrap}
+#chat-view .global-chat-members{max-width:min(520px,calc(100% - 340px));min-width:160px}
+#chat-view .global-chat-splitter{flex:0 0 14px;width:14px;cursor:ew-resize;touch-action:none}
+@media(max-width:760px){
+ #chat-view .global-chat-layout{gap:10px}
+ #chat-view .global-chat-room{height:calc(100dvh - 225px);min-height:300px;max-height:calc(100dvh - 145px)}
+ #chat-view .global-chat-compose{gap:6px;padding:8px 8px calc(8px + env(safe-area-inset-bottom))}
+ #chat-view .global-chat-compose #global-chat-input{height:42px}
+ #chat-view .global-chat-members{min-width:0;width:100%;max-width:none}
+}

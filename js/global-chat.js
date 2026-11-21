@@ -27,14 +27,16 @@
   function syncMemberPresence(){const state=channel?.presenceState?.()||{};onlineMemberIds=new Set(Object.keys(state).map(String));renderMembers()}
   function setupMemberResizer(){
     if(!splitter||!chatLayout||splitter.dataset.ready)return;splitter.dataset.ready='1';
-    const key='nero.chat.memberWidth',min=170,max=440;
-    const saved=Number(localStorage.getItem(key));if(saved>=min&&saved<=max)chatLayout.style.setProperty('--member-width',saved+'px');
+    const key='nero.chat.memberWidth',min=160;
+    const getBounds=()=>{const rect=chatLayout.getBoundingClientRect();const max=Math.max(min,Math.min(520,rect.width-340));return {rect,max}};
+    const saved=Number(localStorage.getItem(key));if(saved>=min&&saved<=520)chatLayout.style.setProperty('--member-width',saved+'px');
     let dragging=false;
-    splitter.addEventListener('pointerdown',e=>{if(window.matchMedia('(max-width:760px)').matches)return;dragging=true;splitter.setPointerCapture(e.pointerId);document.body.classList.add('global-chat-resizing');e.preventDefault()});
-    splitter.addEventListener('pointermove',e=>{if(!dragging)return;const rect=chatLayout.getBoundingClientRect();const width=Math.max(min,Math.min(max,rect.right-e.clientX));chatLayout.style.setProperty('--member-width',width+'px');localStorage.setItem(key,String(Math.round(width)))});
+    const resizeAt=x=>{const {rect,max}=getBounds();const width=Math.max(min,Math.min(max,rect.right-x));chatLayout.style.setProperty('--member-width',width+'px');localStorage.setItem(key,String(Math.round(width)))};
+    splitter.addEventListener('pointerdown',e=>{if(window.matchMedia('(max-width:760px)').matches)return;dragging=true;splitter.setPointerCapture(e.pointerId);document.body.classList.add('global-chat-resizing');e.preventDefault();resizeAt(e.clientX)});
+    splitter.addEventListener('pointermove',e=>{if(dragging)resizeAt(e.clientX)});
     const stop=()=>{dragging=false;document.body.classList.remove('global-chat-resizing')};
-    splitter.addEventListener('pointerup',stop);splitter.addEventListener('pointercancel',stop);
-    splitter.addEventListener('keydown',e=>{if(!['ArrowLeft','ArrowRight'].includes(e.key))return;e.preventDefault();const current=parseFloat(getComputedStyle(chatLayout).getPropertyValue('--member-width'))||228;const next=Math.max(min,Math.min(max,current+(e.key==='ArrowLeft'?-16:16)));chatLayout.style.setProperty('--member-width',next+'px');localStorage.setItem(key,String(next))});
+    splitter.addEventListener('pointerup',stop);splitter.addEventListener('pointercancel',stop);splitter.addEventListener('lostpointercapture',stop);
+    splitter.addEventListener('keydown',e=>{if(!['ArrowLeft','ArrowRight'].includes(e.key))return;e.preventDefault();const current=parseFloat(getComputedStyle(chatLayout).getPropertyValue('--member-width'))||228;const {max}=getBounds();const next=Math.max(min,Math.min(max,current+(e.key==='ArrowLeft'?-16:16)));chatLayout.style.setProperty('--member-width',next+'px');localStorage.setItem(key,String(next))});
   }
   setupMemberResizer();
   const mentionBadge=document.createElement('span');
