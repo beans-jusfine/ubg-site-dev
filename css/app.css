@@ -10205,6 +10205,7 @@ body.global-chat-resizing{cursor:col-resize!important;user-select:none!important
 .global-chat-moderation-controls>button:disabled{opacity:.55;cursor:wait;transform:none}
 .global-chat-moderation-controls>small{color:var(--mute);font-size:10px}
 .global-chat-message-body .global-chat-mention.everyone{padding:1px 5px;border-radius:5px;background:color-mix(in srgb,#d6a84b 20%,transparent);color:#d6a84b;font-weight:800}
+.global-chat-message-body .global-chat-mention.here{padding:1px 5px;border-radius:5px;background:color-mix(in srgb,#55c9a5 20%,transparent);color:#55c9a5;font-weight:800}
 
 
 /* Timed-out members see a live countdown instead of the message composer. */
