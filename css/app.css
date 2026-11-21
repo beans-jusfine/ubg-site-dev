@@ -9933,7 +9933,7 @@ nav button[data-v="chat"]{position:relative}
 
 /* Global chat message management + reactions */
 #chat-view .global-chat-message{position:relative}
-#chat-view .global-chat-message-actions{display:flex;align-items:center;gap:5px;margin-top:5px;opacity:.72}
+#chat-view .global-chat-message-actions{display:flex;align-items:center;gap:5px;margin:5px 0 6px;opacity:.72}
 #chat-view .global-chat-message-actions button{padding:3px 7px;border:1px solid var(--chat-line);border-radius:6px;background:transparent;color:var(--chat-muted);font-size:11px;cursor:pointer}
 #chat-view .global-chat-message-actions button:hover{border-color:var(--chat-accent);color:var(--chat-accent)}
 #chat-view .global-chat-message-actions button.danger:hover{border-color:#e45b65;color:#e45b65}
