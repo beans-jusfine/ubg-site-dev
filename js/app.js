@@ -159,7 +159,9 @@ function closeStellarDirect(){
 function openStellarDirect(url,title){
   let parsed;
   try{parsed=new URL(url)}catch(e){return}
-  if(parsed.origin!=='https://stellar.rip'||!/^\\/en\\/watch\\/embed\\/(movie\\/\\d+|tv\\/\\d+-\\d+-\\d+)$/.test(parsed.pathname))return;
+  const path=parsed.pathname.split('/');
+  const validPath=path.length===6&&path[1]==='en'&&path[2]==='watch'&&path[3]==='embed'&&((path[4]==='movie'&&path[5].split('-').length===1)||(path[4]==='tv'&&path[5].split('-').length===3))&&path[5].split('-').every(part=>part&&Number.isSafeInteger(Number(part))&&Number(part)>0);
+  if(parsed.origin!=='https://stellar.rip'||!validPath)return;
   document.getElementById('nero-stellar-direct-overlay')?.remove();
   const overlay=document.createElement('div');
   overlay.id='nero-stellar-direct-overlay';
