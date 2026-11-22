@@ -26,6 +26,7 @@ const tabCloakPresets={
 };
 
 /* NERO themes: keep the original appearance as the default and let users opt into Aero. */
+const tabCloakSet=$('#settings .set');
 const NERO_THEME_KEY='nero.theme.choice.v1';
 const NERO_AERO_COLOR_KEY='nero.theme.aeroColor.v1';
 const neroThemeSelect=document.createElement('div');
@@ -46,7 +47,6 @@ neroThemeControl.addEventListener('change',()=>{applyNeroTheme(neroThemeControl.
 neroAeroColorControl.addEventListener('change',()=>{applyNeroTheme('aero-glass',neroAeroColorControl.value);toast('Aero color updated')});
 applyNeroTheme(load(NERO_THEME_KEY)||'default',load(NERO_AERO_COLOR_KEY)||'blue',false);
 
-const tabCloakSet=$('#settings .set');
 tabCloakSet.insertAdjacentHTML('beforeend',
   '<h2>tab cloaking</h2>'+
   '<div class="grp"><div class="gl">Tab appearance</div>'+
