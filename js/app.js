@@ -34,6 +34,15 @@ neroThemeSelect.className='grp nero-theme-settings';
 neroThemeSelect.innerHTML='<div class="gl">NERO theme</div><div class="row"><div>Theme<small>Choose the overall browser appearance</small></div><select id="nero-theme-select" aria-label="NERO theme"><option value="default">Default</option><option value="aero-glass">Windows Aero</option></select></div><div class="row" id="nero-aero-color-row"><div>Aero color<small>Choose the tint used by Windows Aero</small></div><select id="nero-aero-color" aria-label="Aero color"><option value="blue">Classic blue</option><option value="silver">Silver</option><option value="emerald">Emerald</option><option value="violet">Violet</option><option value="rose">Rose</option></select></div>';
 tabCloakSet.insertBefore(neroThemeSelect,tabCloakSet.firstChild);
 const neroThemeControl=$('#nero-theme-select'),neroAeroColorControl=$('#nero-aero-color'),neroAeroColorRow=$('#nero-aero-color-row');
+function updateNeroThemeFavicon(){
+  let link=document.getElementById('nero-tab-cloak-icon');
+  if(!link){link=document.createElement('link');link.id='nero-tab-cloak-icon';link.rel='icon';document.head.appendChild(link)}
+  let saved=null;try{saved=JSON.parse(load(TAB_CLOAK_KEY)||'null')}catch(e){}
+  if(!saved||(saved.title==='NERO'&&!saved.icon)){
+    link.href=load(NERO_THEME_KEY)==='aero-glass'?'/favicon-aero.ico':'/favicon-default.ico';
+    link.type='image/x-icon';
+  }
+}
 function syncNeroMoviesTheme(theme=load(NERO_THEME_KEY)||'default',color=load(NERO_AERO_COLOR_KEY)||'blue'){
   const frame=$('#nero-movies-frame');
   frame?.contentWindow?.postMessage({type:'NERO_THEME_SYNC',theme:theme==='aero-glass'?'aero-glass':'default',color},'https://nero-movies.onrender.com');
@@ -47,7 +56,7 @@ function applyNeroTheme(theme,color,persist=true){
   neroAeroColorControl.value=root.dataset.neroAeroColor;
   neroAeroColorRow.hidden=theme!=='aero-glass';
   if(persist){save(NERO_THEME_KEY,theme==='aero-glass'?'aero-glass':'default');save(NERO_AERO_COLOR_KEY,root.dataset.neroAeroColor)}
-  syncNeroMoviesTheme(theme,color);
+  updateNeroThemeFavicon();\n  syncNeroMoviesTheme(theme,color);
 }
 neroThemeControl.addEventListener('change',()=>{applyNeroTheme(neroThemeControl.value,neroAeroColorControl.value);toast(neroThemeControl.value==='aero-glass'?'Windows Aero enabled':'Default theme restored')});
 neroAeroColorControl.addEventListener('change',()=>{applyNeroTheme('aero-glass',neroAeroColorControl.value);toast('Aero color updated')});
@@ -96,7 +105,7 @@ function applyTabCloak(title,icon,persist=true){
   title=(String(title||'NERO').trim().slice(0,60)||'NERO');
   document.title=title;
   if(icon){cloakIconLink.href=icon;cloakIconLink.type=icon.startsWith('data:image/svg+xml')?'image/svg+xml':(icon.startsWith('data:image/png')?'image/png':'')}
-  else{cloakIconLink.href='/img/favicon.png';cloakIconLink.type='image/png'}
+  else{cloakIconLink.href=load(NERO_THEME_KEY)==='aero-glass'?'/favicon-aero.ico':'/favicon-default.ico';cloakIconLink.type='image/x-icon'}
   if(persist){try{localStorage.setItem(TAB_CLOAK_KEY,JSON.stringify({title,icon:icon||''}))}catch(e){toast('Could not save tab style in this browser')}}
 }
 function setCloakPreset(key){
