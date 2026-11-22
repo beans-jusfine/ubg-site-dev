@@ -10744,3 +10744,52 @@ body.global-chat-resizing{cursor:col-resize!important;user-select:none!important
 #ai .ai-message-images{display:flex;flex-wrap:wrap;gap:8px;margin-top:9px}
 #ai .ai-message-images img{display:block;max-width:min(240px,100%);max-height:220px;object-fit:contain;border-radius:9px;border:1px solid var(--line)}
 @media(max-width:600px){#ai .ai-attach{width:42px;height:44px}#ai .ai-message-images img{max-width:100%;max-height:180px}}
+
+/* Mobile chat panels: give DMs and members full-width rows instead of squeezing
+   both side-by-side on narrow phone screens. */
+@media(max-width:760px){
+  #chat-view .global-chat-layout{
+    grid-template-columns:minmax(0,1fr);
+    grid-template-rows:minmax(220px,1fr) 148px 132px;
+    gap:7px;
+  }
+  #chat-view .global-chat-room{
+    grid-column:1;
+    grid-row:1;
+    min-width:0;
+  }
+  #chat-view .nero-dm-dock{
+    grid-column:1;
+    grid-row:2;
+    width:100%;
+    min-width:0;
+  }
+  #chat-view .nero-dm-layout{
+    grid-template-columns:minmax(92px,30%) minmax(0,1fr);
+  }
+  #chat-view .global-chat-members{
+    grid-column:1;
+    grid-row:3;
+    width:100%;
+    min-width:0;
+  }
+  #chat-view .global-chat-layout.nero-dm-hidden .global-chat-members{
+    grid-row:2;
+  }
+  #chat-view .global-chat-layout.nero-members-hidden .nero-dm-dock{
+    grid-row:2;
+  }
+  #chat-view .global-chat-layout.nero-dm-hidden.nero-members-hidden .global-chat-room{
+    grid-row:1;
+  }
+}
+@media(max-width:380px){
+  #chat-view .global-chat-layout{
+    grid-template-columns:minmax(0,1fr);
+    grid-template-rows:minmax(205px,1fr) 140px 124px;
+    gap:6px;
+  }
+  #chat-view .nero-dm-layout{
+    grid-template-columns:minmax(82px,30%) minmax(0,1fr);
+  }
+}
