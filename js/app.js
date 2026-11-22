@@ -34,6 +34,11 @@ neroThemeSelect.className='grp nero-theme-settings';
 neroThemeSelect.innerHTML='<div class="gl">NERO theme</div><div class="row"><div>Theme<small>Choose the overall browser appearance</small></div><select id="nero-theme-select" aria-label="NERO theme"><option value="default">Default</option><option value="aero-glass">Windows Aero</option></select></div><div class="row" id="nero-aero-color-row"><div>Aero color<small>Choose the tint used by Windows Aero</small></div><select id="nero-aero-color" aria-label="Aero color"><option value="blue">Classic blue</option><option value="silver">Silver</option><option value="emerald">Emerald</option><option value="violet">Violet</option><option value="rose">Rose</option></select></div>';
 tabCloakSet.insertBefore(neroThemeSelect,tabCloakSet.firstChild);
 const neroThemeControl=$('#nero-theme-select'),neroAeroColorControl=$('#nero-aero-color'),neroAeroColorRow=$('#nero-aero-color-row');
+function syncNeroMoviesTheme(theme=load(NERO_THEME_KEY)||'default',color=load(NERO_AERO_COLOR_KEY)||'blue'){
+  const frame=$('#nero-movies-frame');
+  frame?.contentWindow?.postMessage({type:'NERO_THEME_SYNC',theme:theme==='aero-glass'?'aero-glass':'default',color},'https://nero-movies.onrender.com');
+}
+$('#nero-movies-frame')?.addEventListener('load',()=>syncNeroMoviesTheme());
 function applyNeroTheme(theme,color,persist=true){
   const root=document.documentElement;
   if(theme==='aero-glass')root.dataset.neroTheme='aero-glass';else root.removeAttribute('data-nero-theme');
@@ -42,6 +47,7 @@ function applyNeroTheme(theme,color,persist=true){
   neroAeroColorControl.value=root.dataset.neroAeroColor;
   neroAeroColorRow.hidden=theme!=='aero-glass';
   if(persist){save(NERO_THEME_KEY,theme==='aero-glass'?'aero-glass':'default');save(NERO_AERO_COLOR_KEY,root.dataset.neroAeroColor)}
+  syncNeroMoviesTheme(theme,color);
 }
 neroThemeControl.addEventListener('change',()=>{applyNeroTheme(neroThemeControl.value,neroAeroColorControl.value);toast(neroThemeControl.value==='aero-glass'?'Windows Aero enabled':'Default theme restored')});
 neroAeroColorControl.addEventListener('change',()=>{applyNeroTheme('aero-glass',neroAeroColorControl.value);toast('Aero color updated')});

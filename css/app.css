@@ -11139,3 +11139,27 @@ body.global-chat-resizing{cursor:col-resize!important;user-select:none!important
 :root[data-nero-theme="aero-glass"][data-nero-aero-color="rose"] textarea:focus,
 :root[data-nero-theme="aero-glass"][data-nero-aero-color="rose"] select:focus{outline-color:rgba(240,174,202,.55);border-color:#f5c4d9}
 .nero-theme-settings [hidden]{display:none!important}
+
+
+/* Windows Aero surfaces for the Games view and embedded launcher. */
+:root[data-nero-theme="aero-glass"] #games{
+  min-height:calc(100vh - 150px);padding:clamp(14px,2.2vw,26px);
+  border:1px solid rgba(225,241,255,.28);border-radius:18px;
+  background:linear-gradient(145deg,rgba(224,241,255,.14),rgba(32,57,82,.34));
+  box-shadow:inset 0 1px rgba(255,255,255,.2),0 14px 36px rgba(4,16,29,.2);
+  backdrop-filter:blur(18px) saturate(1.25);
+}
+:root[data-nero-theme="aero-glass"] #games iframe{
+  border:1px solid rgba(225,241,255,.28)!important;border-radius:12px;
+  background:rgba(15,31,49,.68)!important;
+}
+:root[data-nero-theme="aero-glass"] #games button,
+:root[data-nero-theme="aero-glass"] #games a{
+  border-color:rgba(225,241,255,.28);
+  border-radius:9px;
+}
+:root[data-nero-theme="aero-glass"] .movies-frame-wrap{
+  background:transparent;border:1px solid rgba(225,241,255,.28);
+  border-radius:14px;overflow:hidden;box-shadow:0 12px 32px rgba(4,16,29,.22);
+}
+:root[data-nero-theme="aero-glass"] #nero-movies-frame{background:transparent}
