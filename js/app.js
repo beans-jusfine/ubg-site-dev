@@ -150,6 +150,33 @@ window.FERNLIGHT={get wispUrl(){return getWisp()}};
 
 let proxyReady=null,controller=null,EpoxyClientClass=null,proxyStatusEl=null;
 const proxyFrames=new Map();
+function closeStellarDirect(){
+  const overlay=document.getElementById('nero-stellar-direct-overlay');
+  if(overlay)overlay.remove();
+  const movieFrame=$('#nero-movies-frame');
+  movieFrame?.contentWindow?.postMessage({type:'NERO_STELLAR_PLAYER_CLOSED'},'*');
+}
+function openStellarDirect(url,title){
+  let parsed;
+  try{parsed=new URL(url)}catch(e){return}
+  if(parsed.origin!=='https://stellar.rip'||!/^\\/en\\/watch\\/embed\\/(movie\\/\\d+|tv\\/\\d+-\\d+-\\d+)$/.test(parsed.pathname))return;
+  document.getElementById('nero-stellar-direct-overlay')?.remove();
+  const overlay=document.createElement('div');
+  overlay.id='nero-stellar-direct-overlay';
+  overlay.style.cssText='position:fixed;inset:0;z-index:2147483000;background:#050505;display:flex;flex-direction:column;color:#fff;font:14px system-ui,sans-serif';
+  const bar=document.createElement('div');
+  bar.style.cssText='height:48px;flex:none;display:flex;align-items:center;justify-content:space-between;gap:12px;padding:0 14px;background:#111;border-bottom:1px solid #292929';
+  const label=document.createElement('strong');label.textContent=String(title||'Stellar player').slice(0,100);
+  const close=document.createElement('button');close.type='button';close.textContent='Close';close.style.cssText='border:1px solid #444;border-radius:8px;background:#222;color:#fff;padding:7px 13px;cursor:pointer';
+  close.onclick=closeStellarDirect;bar.append(label,close);
+  const frame=document.createElement('iframe');frame.title='Stellar player';frame.allow='autoplay; fullscreen; picture-in-picture; encrypted-media';frame.allowFullscreen=true;frame.referrerPolicy='strict-origin-when-cross-origin';frame.style.cssText='display:block;border:0;width:100%;height:100%;flex:1;min-height:0;background:#000';frame.src=parsed.href;
+  overlay.append(bar,frame);document.body.appendChild(overlay);
+}
+window.addEventListener('message',event=>{
+  const movieFrame=$('#nero-movies-frame');
+  if(!movieFrame||event.source!==movieFrame.contentWindow)return;
+  if(event.data?.type==='NERO_STELLAR_PLAYER_OPEN')openStellarDirect(event.data.url,event.data.title);
+});
 function setProxyStatus(label,state,title){if(!proxyStatusEl)return;proxyStatusEl.textContent=label;proxyStatusEl.dataset.state=state||'idle';proxyStatusEl.title=title||label;}
 function loadScript(src){return new Promise((res,rej)=>{const s=document.createElement('script');s.src=src;s.onload=res;s.onerror=()=>rej(new Error('Missing file '+src+'. Did you run the setup and upload the public folder?'));document.head.appendChild(s)})}
 function initProxy(){if(proxyReady)return proxyReady;
@@ -290,6 +317,7 @@ function showTabMenu(id,x,y){
 }
 document.addEventListener('pointerdown',e=>{if(!tabMenu.contains(e.target))hideTabMenu()});
 document.addEventListener('keydown',e=>{if(e.key==='Escape')hideTabMenu()});
+document.addEventListener('keydown',e=>{if(e.key==='Escape'&&document.getElementById('nero-stellar-direct-overlay'))closeStellarDirect()});
 function draw(){const t=cT();show(t.v);Object.entries(navButtons).forEach(([k,b])=>{b.disabled=k!=='home'&&t.v!=='site';b.style.opacity=b.disabled?'.4':'1';b.style.cursor=b.disabled?'default':'pointer'});
 $$('#sites iframe').forEach(f=>f.style.display=f.id==='f'+t.id?'block':'none');
 $('#url').value=t.v==='site'?t.src:'nero://'+(t.v==='tube'?'movies':t.v);
