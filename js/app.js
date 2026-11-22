@@ -38,6 +38,23 @@ tabCloakSet.insertAdjacentHTML('beforeend',
   '<div class="ctl" style="justify-content:flex-end;margin-top:12px"><button class="ghost" id="cloak-reset" type="button">Reset</button><button class="btn" id="cloak-apply" type="button">Apply tab style</button></div>'+
   '<p class="memory-note">Custom icons are saved in this browser. Keep uploaded icons reasonably small (under 512 KB).</p></div>'
 );
+tabCloakSet.insertAdjacentHTML('beforeend',
+  '<h2>privacy</h2>'+
+  '<div class="row"><div>AdBlock<small>Block common advertising and tracking requests on proxied websites</small></div><label style="display:flex;align-items:center;gap:9px"><span id="nero-adblock-state" class="hint" style="margin:0">On</span><input type="checkbox" id="nero-adblock-toggle" aria-label="Enable AdBlock" checked></label></div>'
+);
+const ADBLOCK_KEY='nero.adblock.enabled.v1';
+let adBlockEnabled=load(ADBLOCK_KEY)!=='0';
+const adBlockToggle=$('#nero-adblock-toggle');
+const adBlockState=$('#nero-adblock-state');
+function syncAdBlock(){
+  adBlockToggle.checked=adBlockEnabled;
+  adBlockState.textContent=adBlockEnabled?'On':'Off';
+  save(ADBLOCK_KEY,adBlockEnabled?'1':'0');
+  const worker=navigator.serviceWorker?.controller;
+  if(worker)worker.postMessage({type:'NERO_ADBLOCK',enabled:adBlockEnabled});
+}
+adBlockToggle.addEventListener('change',()=>{adBlockEnabled=adBlockToggle.checked;syncAdBlock();toast('AdBlock '+(adBlockEnabled?'enabled':'disabled'))});
+syncAdBlock();
 const cloakTitle=$('#cloak-title'),cloakIconUrl=$('#cloak-icon-url'),cloakFile=$('#cloak-icon-file');
 let cloakUploadedIcon='';
 const cloakIconLink=(()=>{let l=document.getElementById('nero-tab-cloak-icon');if(!l){l=document.createElement('link');l.id='nero-tab-cloak-icon';l.rel='icon';document.head.appendChild(l)}return l})();
@@ -155,6 +172,7 @@ navigator.serviceWorker.addEventListener('controllerchange',()=>{clearTimeout(ti
 serviceworker=navigator.serviceWorker.controller||reg.active;
 }
 if(!serviceworker)throw new Error('Scramjet service worker did not become active');
+serviceworker.postMessage({type:'NERO_ADBLOCK',enabled:adBlockEnabled});
 for(const src of ['/scram/scramjet.js','/controller/controller.api.js','/utils/scramjet-utils.js'])await loadScript(src);
 const api=window.$scramjetController;
 if(!api||!api.Controller)throw new Error('Scramjet 2.x controller failed to load');
