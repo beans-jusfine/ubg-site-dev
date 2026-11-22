@@ -6,7 +6,6 @@ loadLucide().catch(()=>{});
 const WISP_URL=window.NERO_CONFIG.wisp;
 const AI_URL=window.NERO_CONFIG.ai;
 const isPlaceholder=u=>/YOUR-/.test(u);
-document.documentElement.dataset.neroTheme='aero-glass';
 function show(v){$$('.view').forEach(e=>e.classList.toggle('on',e.id===(v==='games'?'games-view':v==='chat'?'chat-view':v)));$$('nav button[data-v]').forEach(b=>b.classList.toggle('on',b.dataset.v===v))}
 $$('nav button[data-v]').forEach(b=>b.onclick=()=>nav(b.dataset.v));
 let luminPromise=null,luminInitialized=false;
@@ -25,6 +24,28 @@ const tabCloakPresets={
   calendar:{title:'Google Calendar',icon:'https://www.google.com/s2/favicons?domain=calendar.google.com&sz=64'},
   canvas:{title:'Canvas',icon:'https://www.google.com/s2/favicons?domain=instructure.com&sz=64'}
 };
+
+/* NERO themes: keep the original appearance as the default and let users opt into Aero. */
+const NERO_THEME_KEY='nero.theme.choice.v1';
+const NERO_AERO_COLOR_KEY='nero.theme.aeroColor.v1';
+const neroThemeSelect=document.createElement('div');
+neroThemeSelect.className='grp nero-theme-settings';
+neroThemeSelect.innerHTML='<div class="gl">NERO theme</div><div class="row"><div>Theme<small>Choose the overall browser appearance</small></div><select id="nero-theme-select" aria-label="NERO theme"><option value="default">Default</option><option value="aero-glass">Windows Aero</option></select></div><div class="row" id="nero-aero-color-row"><div>Aero color<small>Choose the tint used by Windows Aero</small></div><select id="nero-aero-color" aria-label="Aero color"><option value="blue">Classic blue</option><option value="silver">Silver</option><option value="emerald">Emerald</option><option value="violet">Violet</option><option value="rose">Rose</option></select></div>';
+tabCloakSet.insertBefore(neroThemeSelect,tabCloakSet.firstChild);
+const neroThemeControl=$('#nero-theme-select'),neroAeroColorControl=$('#nero-aero-color'),neroAeroColorRow=$('#nero-aero-color-row');
+function applyNeroTheme(theme,color,persist=true){
+  const root=document.documentElement;
+  if(theme==='aero-glass')root.dataset.neroTheme='aero-glass';else root.removeAttribute('data-nero-theme');
+  root.dataset.neroAeroColor=['blue','silver','emerald','violet','rose'].includes(color)?color:'blue';
+  neroThemeControl.value=theme==='aero-glass'?'aero-glass':'default';
+  neroAeroColorControl.value=root.dataset.neroAeroColor;
+  neroAeroColorRow.hidden=theme!=='aero-glass';
+  if(persist){save(NERO_THEME_KEY,theme==='aero-glass'?'aero-glass':'default');save(NERO_AERO_COLOR_KEY,root.dataset.neroAeroColor)}
+}
+neroThemeControl.addEventListener('change',()=>{applyNeroTheme(neroThemeControl.value,neroAeroColorControl.value);toast(neroThemeControl.value==='aero-glass'?'Windows Aero enabled':'Default theme restored')});
+neroAeroColorControl.addEventListener('change',()=>{applyNeroTheme('aero-glass',neroAeroColorControl.value);toast('Aero color updated')});
+applyNeroTheme(load(NERO_THEME_KEY)||'default',load(NERO_AERO_COLOR_KEY)||'blue',false);
+
 const tabCloakSet=$('#settings .set');
 tabCloakSet.insertAdjacentHTML('beforeend',
   '<h2>tab cloaking</h2>'+
