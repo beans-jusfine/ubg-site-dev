@@ -56,7 +56,8 @@ function applyNeroTheme(theme,color,persist=true){
   neroAeroColorControl.value=root.dataset.neroAeroColor;
   neroAeroColorRow.hidden=theme!=='aero-glass';
   if(persist){save(NERO_THEME_KEY,theme==='aero-glass'?'aero-glass':'default');save(NERO_AERO_COLOR_KEY,root.dataset.neroAeroColor)}
-  updateNeroThemeFavicon();\n  syncNeroMoviesTheme(theme,color);
+  updateNeroThemeFavicon();
+  syncNeroMoviesTheme(theme,color);
 }
 neroThemeControl.addEventListener('change',()=>{applyNeroTheme(neroThemeControl.value,neroAeroColorControl.value);toast(neroThemeControl.value==='aero-glass'?'Windows Aero enabled':'Default theme restored')});
 neroAeroColorControl.addEventListener('change',()=>{applyNeroTheme('aero-glass',neroAeroColorControl.value);toast('Aero color updated')});
