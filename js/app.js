@@ -153,6 +153,7 @@ const proxyFrames=new Map();
 function closeStellarDirect(){
   const overlay=document.getElementById('nero-stellar-direct-overlay');
   if(overlay)overlay.remove();
+  try{const channel=new BroadcastChannel('nero-stellar-direct');channel.postMessage({type:'CLOSE'});channel.close()}catch(e){}
   const movieFrame=$('#nero-movies-frame');
   movieFrame?.contentWindow?.postMessage({type:'NERO_STELLAR_PLAYER_CLOSED'},'*');
 }
@@ -174,6 +175,13 @@ function openStellarDirect(url,title){
   const frame=document.createElement('iframe');frame.title='Stellar player';frame.allow='autoplay; fullscreen; picture-in-picture; encrypted-media';frame.allowFullscreen=true;frame.referrerPolicy='strict-origin-when-cross-origin';frame.style.cssText='display:block;border:0;width:100%;height:100%;flex:1;min-height:0;background:#000';frame.src=parsed.href;
   overlay.append(bar,frame);document.body.appendChild(overlay);
 }
+try{
+  const stellarChannel=new BroadcastChannel('nero-stellar-direct');
+  stellarChannel.onmessage=event=>{
+    if(event.data?.type==='OPEN')openStellarDirect(event.data.url,event.data.title);
+    if(event.data?.type==='CLOSE')closeStellarDirect();
+  };
+}catch(e){}
 window.addEventListener('message',event=>{
   const movieFrame=$('#nero-movies-frame');
   if(!movieFrame||event.source!==movieFrame.contentWindow)return;
