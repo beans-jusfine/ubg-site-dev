@@ -214,7 +214,7 @@ const names={home:'new tab',tube:'Movies',games:'games',chat:'global chat',messa
 let tabs=[],cur=0,nid=0;
 const cT=()=>tabs.find(x=>x.id===cur);
 function newTab(v){v=v||'home';const t={id:++nid,v,src:'',u:'',title:names[v]};tabs.push(t);cur=t.id;draw()}
-function nav(v){const t=cT(),f=$('#f'+t.id);if(f)f.remove();proxyFrames.delete(t.id);t.v=v;t.src='';t.u='';t.title=names[v];draw();if(v==='games')initLumin().catch(e=>toast(e.message))}
+function nav(v){const t=cT(),f=$('#f'+t.id);if(f)f.remove();proxyFrames.delete(t.id);t.v=v;t.src='';t.u='';t.title=names[v];draw();if(v==='games')initLumin().catch(e=>toast(e.message));if(v==='tube'){initProxy().then(()=>{const movieFrame=$('#nero-movies-frame');if(!movieFrame)return;let movieProxyFrame=proxyFrames.get('nero-movies');if(!movieProxyFrame){movieProxyFrame=controller.createFrame(movieFrame);proxyFrames.set('nero-movies',movieProxyFrame)}movieProxyFrame.go('https://nero-movies.onrender.com/')}).catch(e=>toast('NERO Movies could not load through the proxy: '+e.message))}}
 function closeTab(id){const i=tabs.findIndex(t=>t.id===id),f=$('#f'+id);if(f)f.remove();proxyFrames.delete(id);tabs.splice(i,1);if(!tabs.length)return newTab();if(cur===id)cur=tabs[Math.max(0,i-1)].id;draw()}
 
 function renameTab(id){
