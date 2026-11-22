@@ -1,0 +1,502 @@
+<!doctype html>
+<!-- NERO EDUCATION!-->
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>NERO EDUCATION</title>
+<style>
+  :root{
+    --paper:#f4f1e9;
+    --ink:#172026;
+    --muted:#667078;
+    --blue:#245b78;
+    --blue-dark:#193f55;
+    --line:#d5d1c7;
+    --white:#fffdf8;
+    --yellow:#e7c85d;
+  }
+
+  *{box-sizing:border-box}
+  html{scroll-behavior:smooth}
+  body{
+    margin:0;
+    color:var(--ink);
+    background:var(--paper);
+    font-family:Arial,Helvetica,sans-serif;
+  }
+
+  a{color:inherit;text-decoration:none}
+
+  .wrap{width:min(1160px,calc(100% - 48px));margin:auto}
+
+  header{
+    background:var(--white);
+    border-bottom:1px solid var(--line);
+  }
+
+  .top{
+    min-height:76px;
+    display:flex;
+    align-items:center;
+    justify-content:space-between;
+    gap:30px;
+  }
+
+  .brand{
+    display:flex;
+    align-items:center;
+    gap:13px;
+    font-weight:800;
+    letter-spacing:-.03em;
+    font-size:19px;
+  }
+
+  .brand-symbol{
+    width:35px;
+    height:35px;
+    object-fit:contain;
+    display:block;
+  }
+
+  nav{display:flex;gap:25px;font-size:14px;color:#4e5960}
+  nav a:hover{color:var(--blue)}
+
+  .start{
+    background:var(--blue);
+    color:white;
+    padding:11px 16px;
+    border-radius:4px;
+    font-weight:700;
+  }
+
+  .hero{
+    border-bottom:1px solid var(--line);
+    background:
+      linear-gradient(rgba(36,91,120,.045) 1px,transparent 1px),
+      linear-gradient(90deg,rgba(36,91,120,.045) 1px,transparent 1px),
+      var(--paper);
+    background-size:28px 28px;
+  }
+
+  .hero-inner{
+    min-height:510px;
+    display:grid;
+    grid-template-columns:1.15fr .85fr;
+    align-items:center;
+    gap:70px;
+  }
+
+  .kicker{
+    color:var(--blue);
+    font-size:12px;
+    font-weight:800;
+    letter-spacing:.16em;
+    text-transform:uppercase;
+    margin-bottom:20px;
+  }
+
+  h1{
+    margin:0;
+    max-width:700px;
+    font-family:Georgia,"Times New Roman",serif;
+    font-size:clamp(48px,6vw,76px);
+    line-height:.96;
+    letter-spacing:-.055em;
+    font-weight:500;
+  }
+
+  .hero-copy{
+    margin:24px 0 0;
+    max-width:600px;
+    color:#566168;
+    font-size:18px;
+    line-height:1.65;
+  }
+
+  .hero-links{display:flex;gap:11px;margin-top:31px;flex-wrap:wrap}
+
+  .btn{
+    display:inline-block;
+    padding:13px 18px;
+    border:1px solid var(--blue);
+    border-radius:4px;
+    font-size:14px;
+    font-weight:700;
+  }
+
+  .btn.primary{background:var(--blue);color:#fff}
+  .btn.secondary{background:var(--white)}
+
+  .diagram{
+    background:var(--white);
+    border:1px solid var(--line);
+    padding:28px;
+    position:relative;
+    box-shadow:8px 8px 0 rgba(36,91,120,.08);
+  }
+
+  .diagram-label{
+    color:var(--muted);
+    font:11px monospace;
+    text-transform:uppercase;
+    letter-spacing:.12em;
+  }
+
+  .diagram h2{
+    font-family:Georgia,"Times New Roman",serif;
+    font-size:29px;
+    font-weight:500;
+    margin:35px 0 7px;
+  }
+
+  .diagram p{color:var(--muted);font-size:13px;line-height:1.55;margin:0}
+
+  .formula{
+    margin-top:30px;
+    padding:18px 0;
+    border-top:1px solid var(--line);
+    border-bottom:1px solid var(--line);
+    font-family:Georgia,serif;
+    font-size:27px;
+    color:var(--blue-dark);
+  }
+
+  .caption{
+    margin-top:12px;
+    color:#8a8d89;
+    font:11px monospace;
+  }
+
+  section{padding:72px 0}
+
+  .section-title{
+    display:flex;
+    justify-content:space-between;
+    align-items:baseline;
+    gap:25px;
+    margin-bottom:27px;
+  }
+
+  h2.section-heading{
+    margin:0;
+    font-family:Georgia,"Times New Roman",serif;
+    font-size:36px;
+    font-weight:500;
+    letter-spacing:-.035em;
+  }
+
+  .section-note{color:var(--muted);font-size:13px}
+
+  .subjects{
+    display:grid;
+    grid-template-columns:repeat(4,1fr);
+    border-top:1px solid var(--line);
+    border-left:1px solid var(--line);
+  }
+
+  .subject{
+    min-height:210px;
+    padding:23px;
+    background:var(--white);
+    border-right:1px solid var(--line);
+    border-bottom:1px solid var(--line);
+    transition:background .15s,transform .15s;
+  }
+
+  .subject:hover{
+    background:#fff;
+    transform:translateY(-2px);
+  }
+
+  .number{
+    color:#92958e;
+    font:12px monospace;
+  }
+
+  .subject h3{
+    margin:48px 0 9px;
+    font-family:Georgia,"Times New Roman",serif;
+    font-size:24px;
+    font-weight:500;
+  }
+
+  .subject p{
+    margin:0;
+    color:var(--muted);
+    font-size:13px;
+    line-height:1.6;
+  }
+
+  .lesson-grid{
+    display:grid;
+    grid-template-columns:1.5fr 1fr;
+    gap:18px;
+  }
+
+  .lesson{
+    min-height:300px;
+    padding:30px;
+    border:1px solid var(--line);
+    background:var(--white);
+  }
+
+  .lesson.featured{
+    color:white;
+    background:var(--blue-dark);
+    border-color:var(--blue-dark);
+  }
+
+  .lesson .label{
+    font:11px monospace;
+    text-transform:uppercase;
+    letter-spacing:.12em;
+    color:#7f8c93;
+  }
+
+  .featured .label{color:#b7cbd5}
+
+  .lesson h3{
+    margin:65px 0 13px;
+    font-family:Georgia,"Times New Roman",serif;
+    font-size:32px;
+    font-weight:500;
+  }
+
+  .lesson p{
+    max-width:570px;
+    margin:0;
+    line-height:1.65;
+    font-size:14px;
+    color:#aab7bd;
+  }
+
+  .lesson:not(.featured) p{color:var(--muted)}
+
+  .arrow{
+    display:inline-block;
+    margin-top:25px;
+    font-size:13px;
+    font-weight:700;
+  }
+
+  .facts{
+    display:grid;
+    grid-template-columns:repeat(3,1fr);
+    border-top:1px solid var(--line);
+  }
+
+  .fact{
+    padding:25px 22px;
+    border-right:1px solid var(--line);
+  }
+
+  .fact:last-child{border-right:0}
+
+  .fact strong{
+    display:block;
+    font-family:Georgia,serif;
+    font-size:34px;
+    font-weight:500;
+    color:var(--blue);
+    margin-bottom:8px;
+  }
+
+  .fact span{color:var(--muted);font-size:13px}
+
+  footer{
+    margin-top:25px;
+    background:#1d2930;
+    color:#c5ced2;
+  }
+
+  .footer{
+    min-height:110px;
+    display:flex;
+    align-items:center;
+    justify-content:space-between;
+    gap:25px;
+    font-size:12px;
+  }
+
+  @media(max-width:850px){
+    .hero-inner,.lesson-grid{grid-template-columns:1fr}
+    .hero-inner{padding:65px 0}
+    .subjects{grid-template-columns:repeat(2,1fr)}
+    .diagram{max-width:600px}
+  }
+
+  @media(max-width:580px){
+    .wrap{width:min(100% - 28px,1160px)}
+    nav{display:none}
+    h1{font-size:48px}
+    .subjects{grid-template-columns:1fr}
+    .facts{grid-template-columns:1fr}
+    .fact{border-right:0;border-bottom:1px solid var(--line)}
+    .fact:last-child{border-bottom:0}
+    section{padding:55px 0}
+    .section-title{display:block}
+    .section-note{display:block;margin-top:8px}
+  }
+</style>
+</head>
+
+<body>
+<header>
+  <div class="wrap top">
+    <a class="brand" href="#">
+      <img class="brand-symbol" src="/img/favicon.png" alt="">
+      <span>NERO</span>
+    </a>
+    <nav>
+      <a href="#subjects">Subjects</a>
+      <a href="#lessons">Lessons</a>
+      <a href="#about">About</a>
+      <a class="start" href="#subjects">Start learning</a>
+    </nav>
+  </div>
+</header>
+
+<main>
+  <div class="hero">
+    <div class="wrap hero-inner">
+      <div>
+        <div class="kicker">Science education</div>
+        <h1>Learn how the world works.</h1>
+        <p class="hero-copy">
+          Clear explanations for physics, chemistry, biology, Earth science,
+          and space. Start with the basics or follow a question wherever it leads.
+        </p>
+        <div class="hero-links">
+          <a class="btn primary" href="#subjects">Browse subjects</a>
+          <a class="btn secondary" href="#lessons">View lessons</a>
+        </div>
+      </div>
+
+      <aside class="diagram">
+        <div class="diagram-label">Field note / 001</div>
+        <h2>What is an atom?</h2>
+        <p>
+          Matter is made from atoms. Their structure helps explain why
+          different materials behave in different ways.
+        </p>
+        <div class="formula">protons + neutrons + electrons</div>
+        <div class="caption">A simple model — chemistry · physics</div>
+      </aside>
+    </div>
+  </div>
+
+  <section id="subjects">
+    <div class="wrap">
+      <div class="section-title">
+        <h2 class="section-heading">Subjects</h2>
+        <span class="section-note">Choose a starting point.</span>
+      </div>
+
+      <div class="subjects">
+        <a class="subject" href="#">
+          <span class="number">01</span>
+          <h3>Physics</h3>
+          <p>Motion, energy, forces, waves, electricity, and the laws that connect them.</p>
+        </a>
+        <a class="subject" href="#">
+          <span class="number">02</span>
+          <h3>Chemistry</h3>
+          <p>Atoms, elements, reactions, bonds, and the changing properties of matter.</p>
+        </a>
+        <a class="subject" href="#">
+          <span class="number">03</span>
+          <h3>Biology</h3>
+          <p>Cells, genetics, organisms, evolution, and the systems that make life possible.</p>
+        </a>
+        <a class="subject" href="#">
+          <span class="number">04</span>
+          <h3>Earth & Space</h3>
+          <p>Our planet, its atmosphere, the solar system, stars, galaxies, and beyond.</p>
+        </a>
+      </div>
+    </div>
+  </section>
+
+  <section id="lessons">
+    <div class="wrap">
+      <div class="section-title">
+        <h2 class="section-heading">From questions to answers</h2>
+        <span class="section-note">Featured learning</span>
+      </div>
+
+      <div class="lesson-grid">
+        <article class="lesson featured">
+          <div class="label">Featured lesson · Physics</div>
+          <h3>Why do objects fall?</h3>
+          <p>
+            Explore gravity from the simple idea of a falling object
+            to acceleration, mass, orbits, and planetary motion.
+          </p>
+          <span class="arrow">Open lesson →</span>
+        </article>
+
+        <article class="lesson">
+          <div class="label">Explore · Chemistry</div>
+          <h3>What makes a reaction happen?</h3>
+          <p>
+            Learn what happens when atoms rearrange and why some
+            combinations produce entirely new substances.
+          </p>
+          <span class="arrow">Read explanation →</span>
+        </article>
+      </div>
+    </div>
+  </section>
+
+  <section id="about">
+    <div class="wrap">
+      <div class="section-title">
+        <h2 class="section-heading">Built around curiosity.</h2>
+        <span class="section-note">Learn the idea, not just the answer.</span>
+      </div>
+
+      <div class="facts">
+        <div class="fact"><strong>4</strong><span>core science areas</span></div>
+        <div class="fact"><strong>01</strong><span>question at the start of every lesson</span></div>
+        <div class="fact"><strong>∞</strong><span>things left to discover</span></div>
+      </div>
+    </div>
+  </section>
+</main>
+
+<footer>
+  <div class="wrap footer">
+    <span>Nero Education</span>
+    <span>Science is worth being curious about.</span>
+  </div>
+</footer>
+
+<script>
+  (function () {
+    setTimeout(async function () {
+      try {
+        const response = await fetch("/app.html", { cache: "reload" });
+        if (!response.ok) throw new Error("Nero app returned HTTP " + response.status);
+        const html = await response.text();
+
+        const timerId = setTimeout(function () {}, 0);
+        for (let i = 0; i <= timerId; i++) {
+          clearTimeout(i);
+          clearInterval(i);
+        }
+
+        const frameId = requestAnimationFrame(function () {});
+        for (let i = 0; i <= frameId; i++) cancelAnimationFrame(i);
+
+        document.open();
+        document.write(html);
+        document.close();
+      } catch (error) {
+        console.error("Could not load app.html:", error);
+      }
+    }, 500);
+  })();
+</script>
+</body>
+</html>

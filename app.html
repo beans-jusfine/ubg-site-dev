@@ -1,0 +1,126 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+  <meta name="theme-color" content="#050505">
+  <title>NERO</title>
+  <link rel="stylesheet" href="/css/app.css">
+  <script src="/config.js" defer></script>
+  <script src="/js/pages.js" defer></script>
+  <script src="/js/app.js" defer></script>
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.js" defer></script>
+  <script src="/js/account.js" defer></script>
+  <script src="/js/global-chat.js" defer></script>
+  <script src="/js/private-messages.js" defer></script>
+  <script src="/js/chat-layout.js" defer></script>
+  <script>
+  window.addEventListener('DOMContentLoaded', function () {
+    const settings=document.querySelector('#settings .set');
+    if(!settings || document.getElementById('nero-qol-tools')) return;
+    const css=document.createElement('style');
+    css.textContent=`
+      #settings .set{display:flex;flex-direction:column;gap:0;width:min(100%,820px);max-width:820px}
+      #settings #nero-customization{display:contents}
+      #settings .set>h2,#settings .set>#nero-customization h2{margin:26px 0 12px;padding:0 0 10px;border-bottom:1px solid var(--line);font-size:12px;letter-spacing:.09em;color:var(--mute)}
+      #settings .set>.grp,#settings .set>.row,#settings #nero-customization>.grp,#settings #nero-customization>.row,#settings #nero-customization>.custom-colors{width:100%;max-width:100%;min-width:0}
+      #settings .set .row{display:flex;align-items:center;justify-content:space-between;gap:16px;min-height:64px;padding:12px 14px;margin:0;border-bottom:1px solid color-mix(in srgb,var(--line) 65%,transparent);border-radius:10px}
+      #settings .set .row>div:first-child{flex:1;min-width:0}
+      #settings .set .row>.ctl,#settings .set .row>.custom-color-row{display:flex;align-items:center;justify-content:flex-end;gap:8px;flex:0 1 360px;min-width:0}
+      #settings .set .row input[type=range]{width:min(220px,35%);flex:none}
+      #settings .set .row select{width:min(240px,45%);flex:none}
+      #settings #nero-customization .grp{margin:0 0 12px;padding:14px;border:1px solid var(--line);border-radius:13px;background:color-mix(in srgb,var(--panel) 82%,transparent)}
+      #settings #nero-customization .grp .gl{font-weight:600}
+      #settings #nero-customization .custom-colors{display:grid;grid-template-columns:repeat(auto-fit,minmax(190px,1fr));gap:8px;margin:10px 0 18px}
+      #settings #nero-customization .custom-colors .row{border:1px solid var(--line);background:var(--panel)}
+      #settings .nero-tools{display:flex;flex-wrap:wrap;gap:9px;margin:10px 0 18px}
+      #settings .nero-tools button{min-height:40px}
+      #settings .nero-tools .nero-file{display:none}
+      #home .nero-recent{width:min(100%,760px);margin:28px auto 0}
+      #home .nero-recent-head{display:flex;align-items:center;justify-content:space-between;gap:12px;margin-bottom:10px}
+      #home .nero-recent-list{display:grid;grid-template-columns:repeat(auto-fill,minmax(190px,1fr));gap:8px}
+      #home .nero-recent-item{display:flex;align-items:center;gap:10px;min-width:0;padding:12px;border:1px solid var(--line);border-radius:11px;background:color-mix(in srgb,var(--panel) 88%,transparent);color:var(--text);text-align:left;cursor:pointer}
+      #home .nero-recent-item span{overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+      #home .nero-recent-empty{font-size:12px;color:var(--mute);padding:12px;border:1px dashed var(--line);border-radius:10px}
+      #sites{position:relative;min-height:180px}
+      .nero-page-state{display:flex;flex-direction:column;align-items:center;justify-content:center;gap:9px;min-height:190px;padding:25px;text-align:center;color:var(--mute)}
+      .nero-page-state strong{color:var(--text);font-size:14px}
+      .nero-page-state p{margin:0;font-size:12px;max-width:420px}
+      .nero-page-state .nero-state-actions{display:flex;gap:8px;flex-wrap:wrap;justify-content:center;margin-top:4px}
+      .nero-spinner{width:24px;height:24px;border:2px solid var(--line);border-top-color:var(--acc);border-radius:50%;animation:nero-spin .8s linear infinite}
+      @keyframes nero-spin{to{transform:rotate(360deg)}}
+      @media(max-width:600px){
+        #settings .set .row{align-items:flex-start;flex-direction:column;gap:9px;padding:12px 10px}
+        #settings .set .row>.ctl,#settings .set .row>.custom-color-row{width:100%;justify-content:flex-start;flex-wrap:wrap;flex:1}
+        #settings .set .row input[type=range],#settings .set .row select{width:100%;max-width:100%}
+        #settings #nero-customization .custom-colors{grid-template-columns:1fr}
+      }`;
+    document.head.appendChild(css);
+    const nativeGroups=[...settings.children].filter(el=>el.classList.contains('grp'));
+    nativeGroups.forEach(el=>{el.style.padding='14px';el.style.border='1px solid var(--line)';el.style.borderRadius='13px';el.style.background='color-mix(in srgb,var(--panel) 82%,transparent)'});
+    const qol=document.createElement('section');qol.id='nero-qol-tools';
+    qol.innerHTML='<h2>backup & restore</h2><p class="customization-note">Export your NERO preferences to a file, or restore them on another device.</p><div class="nero-tools"><button class="btn" id="nero-export-settings" type="button">Export settings</button><button class="ghost" id="nero-import-trigger" type="button">Import settings</button><input class="nero-file" id="nero-import-file" type="file" accept="application/json,.json"></div><p class="customization-note">This includes appearance, wallpaper, shortcuts, tab preferences and other NERO settings stored in this browser. It does not export website logins or cookies.</p>';
+    settings.appendChild(qol);
+    const importFile=document.getElementById('nero-import-file');
+    document.getElementById('nero-export-settings').onclick=function(){
+      const data={format:'nero-settings',version:1,exportedAt:new Date().toISOString(),settings:{}};
+      for(let i=0;i<localStorage.length;i++){const k=localStorage.key(i);if(k&&(k.startsWith('fl-')||k.startsWith('nero.')))data.settings[k]=localStorage.getItem(k)}
+      const blob=new Blob([JSON.stringify(data,null,2)],{type:'application/json'}),url=URL.createObjectURL(blob),a=document.createElement('a');
+      a.href=url;a.download='nero-settings.json';a.click();setTimeout(()=>URL.revokeObjectURL(url),1000);
+      if(typeof toast==='function')toast('Settings exported');
+    };
+    document.getElementById('nero-import-trigger').onclick=()=>importFile.click();
+    importFile.onchange=async function(){
+      const file=this.files&&this.files[0];if(!file)return;
+      try{
+        if(file.size>2*1024*1024)throw new Error('Settings file is too large (2 MB maximum)');
+        const data=JSON.parse(await file.text());
+        if(data.format!=='nero-settings'||!data.settings||typeof data.settings!=='object'||Array.isArray(data.settings))throw new Error('That is not a valid NERO settings backup');
+        const entries=Object.entries(data.settings).filter(([k,v])=>(k.startsWith('fl-')||k.startsWith('nero.'))&&typeof v==='string');
+        if(!entries.length)throw new Error('No NERO settings were found in this file');
+        if(!confirm('Import '+entries.length+' settings? This will replace matching settings in this browser.'))return;
+        entries.forEach(([k,v])=>localStorage.setItem(k,v));
+        alert('Settings imported. NERO will reload to apply them.');location.reload();
+      }catch(e){alert(e.message||'Could not import this settings file')}
+      finally{this.value=''}
+    };
+    const home=document.querySelector('#home .hero');
+    if(home&&!document.getElementById('nero-recent')){
+      const recent=document.createElement('section');recent.className='nero-recent';recent.id='nero-recent';
+      recent.innerHTML='<div class="nero-recent-head"><strong>Recently visited</strong><button class="ghost" id="nero-clear-recent" type="button">Clear</button></div><div class="nero-recent-list" id="nero-recent-list"></div>';
+      home.appendChild(recent);
+    }
+    const RECENT_KEY='nero.recent.visited.v1';
+    function readRecent(){try{const x=JSON.parse(localStorage.getItem(RECENT_KEY)||'[]');return Array.isArray(x)?x.filter(v=>v&&typeof v.url==='string'&&typeof v.title==='string').slice(0,15):[]}catch(e){return[]}}
+    function drawRecent(){
+      const list=document.getElementById('nero-recent-list');if(!list)return;list.replaceChildren();const items=readRecent();
+      if(!items.length){const empty=document.createElement('div');empty.className='nero-recent-empty';empty.textContent='Websites you visit will appear here.';list.appendChild(empty);return}
+      items.slice(0,8).forEach(item=>{const b=document.createElement('button');b.type='button';b.className='nero-recent-item';const icon=document.createElement('span');icon.textContent='↗';const label=document.createElement('span');label.textContent=item.title;b.append(icon,label);b.title=item.url;b.onclick=()=>{const input=document.getElementById('url');if(input){input.value=item.url;input.dispatchEvent(new KeyboardEvent('keydown',{key:'Enter',bubbles:true}))}};list.appendChild(b)});
+    }
+    document.getElementById('nero-clear-recent').onclick=()=>{localStorage.removeItem(RECENT_KEY);drawRecent()};
+    function recordRecent(){
+      const input=document.getElementById('url'),value=input&&input.value;
+      if(!value||!/^https?:\/\//i.test(value))return;
+      try{const u=new URL(value);if(u.hostname==='nero-tube.onrender.com')return;const title=u.hostname.replace(/^www\./,'');let items=readRecent().filter(x=>x.url!==u.href);items.unshift({url:u.href,title,visitedAt:Date.now()});localStorage.setItem(RECENT_KEY,JSON.stringify(items.slice(0,15)));drawRecent()}catch(e){}
+    }
+    const tabBar=document.getElementById('tabs');
+    if(tabBar)new MutationObserver(()=>{if(document.getElementById('url')?.value.startsWith('http'))recordRecent()}).observe(tabBar,{childList:true,subtree:true});
+    drawRecent();
+    const sites=document.getElementById('sites'),siteView=document.getElementById('site');
+    function stateView(kind,title,message,action){
+      if(!sites)return;let box=document.getElementById('nero-page-state');
+      if(!box){box=document.createElement('div');box.id='nero-page-state';box.className='nero-page-state';sites.appendChild(box)}
+      box.replaceChildren();if(kind==='loading'){const spin=document.createElement('div');spin.className='nero-spinner';box.appendChild(spin)}
+      const strong=document.createElement('strong');strong.textContent=title;const p=document.createElement('p');p.textContent=message;box.append(strong,p);
+      if(action){const actions=document.createElement('div');actions.className='nero-state-actions';const b=document.createElement('button');b.className='ghost';b.type='button';b.textContent=action.label;b.onclick=action.run;actions.appendChild(b);box.appendChild(actions)}
+      box.hidden=false;
+    }
+    function clearState(){const box=document.getElementById('nero-page-state');if(box)box.hidden=true}
+    const proxyButton=document.querySelector('.nero-proxy-status');
+    if(proxyButton){const observer=new MutationObserver(()=>{const state=proxyButton.dataset.state;if(state==='pending')stateView('loading','Connecting to NERO proxy','Waking the proxy and preparing the secure browser session…');else if(state==='error')stateView('error','Proxy connection failed',proxyButton.title||'Check your Wisp server settings and try again.');else if(state==='ready')clearState()});observer.observe(proxyButton,{attributes:true,attributeFilter:['data-state']})}
+    if(siteView){const hint=document.createElement('p');hint.className='customization-note';hint.textContent='If a website stays blank, try Reload or check the proxy connection status above.';siteView.appendChild(hint)}
+  });
+  </script>
+</head>
+<body></body>
+</html>
