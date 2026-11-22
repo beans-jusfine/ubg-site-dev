@@ -37,8 +37,11 @@ function neroIsAdRequest(raw) {
   let host = '';
   try { host = new URL(candidates.length ? candidates[candidates.length - 1] : text).hostname.toLowerCase(); }
   catch (_) { return false; }
+  // Never filter NERO Movies: its app/API responses must remain untouched.
+  if (host === 'nero-movies.onrender.com' || host.endsWith('.nero-movies.onrender.com')) return false;
   if (NERO_AD_HOSTS.some(domain => host === domain || host.endsWith('.' + domain))) return true;
-  return /\/(?:pagead|gampad|adserver|adsystem|advertising|banner-ads?)(?:[\/?._-]|$)/i.test(text);
+  // Avoid broad URL-path matching because application APIs can use similar paths.
+  return false;
 }
 
 self.addEventListener('message', (event) => {
