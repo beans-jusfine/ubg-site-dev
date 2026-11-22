@@ -11003,3 +11003,121 @@ body.global-chat-resizing{cursor:col-resize!important;user-select:none!important
   #ai .ai-attach{flex-basis:36px;width:36px;min-width:36px;height:40px}
   #ai #ai-send{min-width:48px;padding:7px 8px}
 }
+
+
+/* NERO Cyber-Aurora trial theme — one cohesive identity across the app. */
+:root[data-nero-theme="cyber-aurora"]{
+  --bg:#080a14;
+  --panel:#101426;
+  --line:#252c49;
+  --text:#f2f4ff;
+  --mute:#929bbd;
+  --acc:#a78bfa;
+  color-scheme:dark;
+}
+:root[data-nero-theme="cyber-aurora"] body{
+  background:
+    radial-gradient(ellipse at 16% 8%,rgba(93,55,180,.18),transparent 38%),
+    radial-gradient(ellipse at 88% 78%,rgba(23,153,180,.13),transparent 42%),
+    #080a14;
+}
+:root[data-nero-theme="cyber-aurora"] body::before{
+  opacity:.72;
+  filter:blur(58px);
+  background:
+    radial-gradient(ellipse at 18% 12%,rgba(124,58,237,.42),transparent 34%),
+    radial-gradient(ellipse at 82% 76%,rgba(14,165,190,.25),transparent 38%),
+    radial-gradient(ellipse at 62% 4%,rgba(59,130,246,.16),transparent 30%);
+}
+:root[data-nero-theme="cyber-aurora"] .top,
+:root[data-nero-theme="cyber-aurora"] nav,
+:root[data-nero-theme="cyber-aurora"] #vtabs{
+  background:rgba(10,13,27,.88);
+  border-color:rgba(126,145,210,.16);
+  backdrop-filter:blur(18px);
+}
+:root[data-nero-theme="cyber-aurora"] .tab{
+  border-color:transparent;
+  background:rgba(255,255,255,.025);
+}
+:root[data-nero-theme="cyber-aurora"] .tab.on{
+  background:linear-gradient(115deg,rgba(124,58,237,.2),rgba(14,165,190,.11));
+  border-color:rgba(167,139,250,.38);
+  box-shadow:inset 0 0 0 1px rgba(167,139,250,.06),0 0 20px rgba(124,58,237,.09);
+}
+:root[data-nero-theme="cyber-aurora"] nav button.on{
+  color:#c4b5fd;
+  background:linear-gradient(145deg,rgba(124,58,237,.25),rgba(14,165,190,.12));
+  box-shadow:inset 0 0 0 1px rgba(167,139,250,.2),0 0 18px rgba(124,58,237,.12);
+}
+:root[data-nero-theme="cyber-aurora"] button.btn{
+  color:#fff;
+  background:linear-gradient(110deg,#7650df,#397fbd);
+  box-shadow:0 5px 20px rgba(103,75,220,.2);
+  transition:transform .18s ease,filter .18s ease,box-shadow .18s ease;
+}
+:root[data-nero-theme="cyber-aurora"] button.btn:hover{
+  filter:brightness(1.12);
+  transform:translateY(-1px);
+  box-shadow:0 7px 24px rgba(103,75,220,.3);
+}
+:root[data-nero-theme="cyber-aurora"] button.ghost{
+  background:rgba(255,255,255,.025);
+  border-color:rgba(143,158,213,.2);
+  transition:background .18s ease,border-color .18s ease;
+}
+:root[data-nero-theme="cyber-aurora"] button.ghost:hover{
+  background:rgba(124,58,237,.12);
+  border-color:rgba(167,139,250,.42);
+}
+:root[data-nero-theme="cyber-aurora"] input:not([type="checkbox"]):not([type="color"]):not([type="file"]),
+:root[data-nero-theme="cyber-aurora"] textarea,
+:root[data-nero-theme="cyber-aurora"] select{
+  background-color:rgba(13,18,37,.88);
+  border-color:rgba(135,151,207,.23);
+  color:var(--text);
+}
+:root[data-nero-theme="cyber-aurora"] input:focus,
+:root[data-nero-theme="cyber-aurora"] textarea:focus,
+:root[data-nero-theme="cyber-aurora"] select:focus{
+  outline:2px solid rgba(167,139,250,.32);
+  outline-offset:1px;
+  border-color:#9b82ed;
+}
+:root[data-nero-theme="cyber-aurora"] .view:not(#site){
+  scrollbar-color:#45406d transparent;
+}
+:root[data-nero-theme="cyber-aurora"] #home .hero h1{
+  background:linear-gradient(105deg,#fff 8%,#c4b5fd 48%,#67e8f9 100%);
+  -webkit-background-clip:text;
+  background-clip:text;
+  color:transparent;
+  filter:drop-shadow(0 0 26px rgba(124,58,237,.22));
+}
+:root[data-nero-theme="cyber-aurora"] .shortcut,
+:root[data-nero-theme="cyber-aurora"] .grp,
+:root[data-nero-theme="cyber-aurora"] .memory-panel{
+  border-color:rgba(135,151,207,.16);
+}
+:root[data-nero-theme="cyber-aurora"] .shortcut:hover{
+  border-color:rgba(167,139,250,.4);
+  box-shadow:0 8px 26px rgba(75,55,150,.14);
+}
+:root[data-nero-theme="cyber-aurora"] #toast{
+  border:1px solid rgba(167,139,250,.32);
+  background:rgba(16,20,38,.96);
+  backdrop-filter:blur(16px);
+}
+:root[data-nero-theme="cyber-aurora"] #player .box{
+  border:1px solid rgba(167,139,250,.28);
+  box-shadow:0 20px 80px rgba(0,0,0,.55),0 0 45px rgba(124,58,237,.12);
+}
+@media(prefers-reduced-motion:no-preference){
+  :root[data-nero-theme="cyber-aurora"] body::before{
+    animation:neroAuroraDrift 22s ease-in-out infinite alternate;
+  }
+  @keyframes neroAuroraDrift{
+    from{transform:translate3d(-1.5%,0,0) scale(1)}
+    to{transform:translate3d(1.5%,1%,0) scale(1.06)}
+  }
+}

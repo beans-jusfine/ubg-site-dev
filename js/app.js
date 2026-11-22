@@ -6,6 +6,7 @@ loadLucide().catch(()=>{});
 const WISP_URL=window.NERO_CONFIG.wisp;
 const AI_URL=window.NERO_CONFIG.ai;
 const isPlaceholder=u=>/YOUR-/.test(u);
+document.documentElement.dataset.neroTheme='cyber-aurora';
 function show(v){$$('.view').forEach(e=>e.classList.toggle('on',e.id===(v==='games'?'games-view':v==='chat'?'chat-view':v)));$$('nav button[data-v]').forEach(b=>b.classList.toggle('on',b.dataset.v===v))}
 $$('nav button[data-v]').forEach(b=>b.onclick=()=>nav(b.dataset.v));
 let luminPromise=null,luminInitialized=false;
