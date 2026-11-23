@@ -14,6 +14,18 @@ function initLumin(){if(luminInitialized)return Promise.resolve();if(luminPromis
 function save(k,v){try{localStorage.setItem(k,v)}catch(e){}}
 function load(k){try{return localStorage.getItem(k)}catch(e){return null}}
 
+/* Selectable proxy engines. VanilliaPXY runs as a separate hosted proxy backend. */
+const PROXY_ENGINE_KEY='nero.proxy.engine.v1';
+const VANILLIA_ENDPOINT_KEY='nero.vanillia.endpoint.v1';
+const DEFAULT_VANILLIA_ENDPOINT='https://nero-vanillia-proxy.onrender.com';
+function getProxyEngine(){return load(PROXY_ENGINE_KEY)==='vanillia'?'vanillia':'scramjet'}
+function getVanilliaEndpoint(){
+  const raw=(load(VANILLIA_ENDPOINT_KEY)||DEFAULT_VANILLIA_ENDPOINT).trim();
+  try{const url=new URL(raw);return url.protocol==='https:'?url.origin:DEFAULT_VANILLIA_ENDPOINT}catch(e){return DEFAULT_VANILLIA_ENDPOINT}
+}
+function makeVanilliaUrl(target){return getVanilliaEndpoint()+'/vanillia?url='+encodeURIComponent(target)}
+
+
 /* NERO tab cloaking: changes the browser tab title and favicon for this app page. */
 const TAB_CLOAK_KEY='nero.tabCloak.v1';
 const tabCloakPresets={
@@ -184,6 +196,28 @@ function wispShow(){$('#wst').textContent='status: '+wispState()}
 $('#wisp').value=load('fl-wisp')||'';
 $('#wisp').onchange=e=>{const v=e.target.value.trim();if(v&&!/^wss:\/\//i.test(v)){e.target.value='';save('fl-wisp','')}else save('fl-wisp',v);wispShow()};
 wispShow();
+const proxyEngineSelect=$('#nero-proxy-engine');
+const vanilliaEndpointInput=$('#nero-vanillia-endpoint');
+const vanilliaEndpointRow=$('#nero-vanillia-endpoint-row');
+function syncProxyEngineSettings(){
+  const engine=getProxyEngine();
+  proxyEngineSelect.value=engine;
+  vanilliaEndpointInput.value=load(VANILLIA_ENDPOINT_KEY)||DEFAULT_VANILLIA_ENDPOINT;
+  vanilliaEndpointRow.hidden=engine!=='vanillia';
+  const wispRow=$('#wisp').closest('.row');
+  if(wispRow)wispRow.hidden=engine!=='scramjet';
+  setProxyStatus(engine==='vanillia'?'VanilliaPXY selected':'Scramjet selected',engine==='vanillia'?'ready':'idle',engine==='vanillia'?'New websites will use VanilliaPXY':'New websites will use Scramjet');
+}
+proxyEngineSelect.addEventListener('change',()=>{
+  save(PROXY_ENGINE_KEY,proxyEngineSelect.value==='vanillia'?'vanillia':'scramjet');
+  syncProxyEngineSettings();
+  toast(proxyEngineSelect.value==='vanillia'?'VanilliaPXY selected for new websites':'Scramjet selected for new websites');
+});
+vanilliaEndpointInput.addEventListener('change',()=>{
+  const raw=vanilliaEndpointInput.value.trim();
+  try{const u=new URL(raw);if(u.protocol!=='https:')throw new Error('https required');save(VANILLIA_ENDPOINT_KEY,u.origin);vanilliaEndpointInput.value=u.origin;toast('VanilliaPXY server saved')}
+  catch(e){vanilliaEndpointInput.value=getVanilliaEndpoint();toast('Enter a valid HTTPS server URL')}
+});
 window.FERNLIGHT={get wispUrl(){return getWisp()}};
 
 let proxyReady=null,controller=null,EpoxyClientClass=null,proxyStatusEl=null;
@@ -366,7 +400,7 @@ function showTabMenu(id,x,y){
 document.addEventListener('pointerdown',e=>{if(!tabMenu.contains(e.target))hideTabMenu()});
 document.addEventListener('keydown',e=>{if(e.key==='Escape')hideTabMenu()});
 document.addEventListener('keydown',e=>{if(e.key==='Escape'&&document.getElementById('nero-stellar-direct-overlay'))closeStellarDirect()});
-function draw(){const t=cT();show(t.v);Object.entries(navButtons).forEach(([k,b])=>{b.disabled=k!=='home'&&t.v!=='site';b.style.opacity=b.disabled?'.4':'1';b.style.cursor=b.disabled?'default':'pointer'});
+function draw(){const t=cT();show(t.v);Object.entries(navButtons).forEach(([k,b])=>{b.disabled=k!=='home'&&(t.v!=='site'||(t.engine==='vanillia'&&(k==='back'||k==='forward')));b.style.opacity=b.disabled?'.4':'1';b.style.cursor=b.disabled?'default':'pointer'});
 $$('#sites iframe').forEach(f=>f.style.display=f.id==='f'+t.id?'block':'none');
 $('#url').value=t.v==='site'?t.src:'nero://'+(t.v==='tube'?'movies':t.v);
 const bar=$('#tabs');bar.innerHTML='';
@@ -381,10 +415,12 @@ let h=v;try{h=new URL(v).hostname.replace(/^www\./,'')}catch(e){}
 t.v='site';t.src=v;t.u=v;t.title=h;let f=$('#f'+t.id),frame=proxyFrames.get(t.id);
 if(!f){f=document.createElement('iframe');f.id='f'+t.id;f.className='sf';f.allow='fullscreen; autoplay; picture-in-picture';f.allowFullscreen=true;$('#sites').appendChild(f)}else{f.allow='fullscreen; autoplay; picture-in-picture';f.allowFullscreen=true}
 if(isDirectEmbedAddress(v)){
-proxyFrames.delete(t.id);t.direct=true;f.src=v;
+proxyFrames.delete(t.id);t.direct=true;t.engine='direct';f.src=v;
+}else if(getProxyEngine()==='vanillia'){
+proxyFrames.delete(t.id);t.direct=false;t.engine='vanillia';f.src=makeVanilliaUrl(v);
 }else{
-if(t.direct||!frame){frame=controller.createFrame(f);proxyFrames.set(t.id,frame);t.direct=false}
-frame.go(v);
+if(t.direct||t.engine==='vanillia'||!frame){frame=controller.createFrame(f);proxyFrames.set(t.id,frame);t.direct=false}
+t.engine='scramjet';frame.go(v);
 }
 f.title=h;draw()}
 function isYoutubeAddress(raw){let value=String(raw||'').trim();if(!value)return false;try{const u=new URL(/^\/\//.test(value)?'https:'+value:/^[a-z][a-z0-9+.-]*:\/\//i.test(value)?value:'https://'+value);const host=u.hostname.toLowerCase().replace(/\.$/,'');return /(^|\.)(youtube\.com|youtube-nocookie\.com|youtu\.be)$/.test(host)}catch(e){return false}}
@@ -394,6 +430,7 @@ function openUrl(raw,inPage){raw=(raw||'').trim();if(!raw)return;if(isYoutubeAdd
 const v=norm(raw);
 if(isExternalServiceAddress(v)){ext(v);return}
 if(isDirectEmbedAddress(v)){siteTab(v);return}
+if(getProxyEngine()==='vanillia'){siteTab(v);return}
 initProxy().then(()=>siteTab(v)).catch(e=>toast(e.message))}
 $('#newtab').onclick=()=>newTab();
 $('#ext').onclick=()=>{const t=cT();if(t&&t.u)ext(t.u)};
@@ -418,12 +455,18 @@ const navButtons={};
 });
 $('#url').parentElement.insertBefore(navTools,$('#url'));
 proxyStatusEl=document.createElement('button');proxyStatusEl.type='button';proxyStatusEl.className='nero-proxy-status';proxyStatusEl.textContent='Proxy starting…';proxyStatusEl.style.cssText='flex:none;border:1px solid rgba(255,255,255,.12);background:rgba(255,255,255,.05);color:var(--muted,#aaa);border-radius:999px;padding:5px 9px;font:11px/1.2 inherit;white-space:nowrap;cursor:pointer';
-proxyStatusEl.onclick=()=>{if(proxyStatusEl.dataset.state==='error'||proxyStatusEl.dataset.state==='idle')initProxy().catch(e=>toast(e.message));};
+proxyStatusEl.onclick=()=>{if(getProxyEngine()==='vanillia'){toast('VanilliaPXY is selected');return}if(proxyStatusEl.dataset.state==='error'||proxyStatusEl.dataset.state==='idle')initProxy().catch(e=>toast(e.message));};
 proxyStatusEl.dataset.state='pending';$('#url').parentElement.insertBefore(proxyStatusEl,$('#url'));
+syncProxyEngineSettings();
 function runNavAction(action){
   if(action==='home'){nav('home');return}
   const t=cT(),frame=t&&proxyFrames.get(t.id),iframe=t&&$('#f'+t.id);
   if(!t||t.v!=='site'||!iframe){toast('Open a website first');return}
+  if(t.engine==='vanillia'){
+    if(action==='reload'){iframe.src=makeVanilliaUrl(t.src);return}
+    toast('Use the website navigation controls for back and forward in VanilliaPXY');
+    return;
+  }
   try{
     if(action==='back')iframe.contentWindow.history.back();
     else if(action==='forward')iframe.contentWindow.history.forward();
