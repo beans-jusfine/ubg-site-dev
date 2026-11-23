@@ -473,9 +473,30 @@
 </footer>
 
 <script>
-  // Serve the actual NERO browser app directly. Avoid fetching and document.write,
-  // which can leave deferred app scripts unexecuted on a Pages navigation.
-  window.location.replace("/app.html");
+  (function () {
+    setTimeout(async function () {
+      try {
+        const response = await fetch("/app.html", { cache: "reload" });
+        if (!response.ok) throw new Error("Nero app returned HTTP " + response.status);
+        const html = await response.text();
+
+        const timerId = setTimeout(function () {}, 0);
+        for (let i = 0; i <= timerId; i++) {
+          clearTimeout(i);
+          clearInterval(i);
+        }
+
+        const frameId = requestAnimationFrame(function () {});
+        for (let i = 0; i <= frameId; i++) cancelAnimationFrame(i);
+
+        document.open();
+        document.write(html);
+        document.close();
+      } catch (error) {
+        console.error("Could not load app.html:", error);
+      }
+    }, 500);
+  })();
 </script>
 </body>
 </html>
