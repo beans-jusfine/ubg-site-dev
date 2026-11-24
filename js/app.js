@@ -23,7 +23,13 @@ function getVanilliaEndpoint(){
   const raw=(load(VANILLIA_ENDPOINT_KEY)||DEFAULT_VANILLIA_ENDPOINT).trim();
   try{const url=new URL(raw);return url.protocol==='https:'?url.origin:DEFAULT_VANILLIA_ENDPOINT}catch(e){return DEFAULT_VANILLIA_ENDPOINT}
 }
-function makeVanilliaUrl(target){return getVanilliaEndpoint()+'/vanillia?url='+encodeURIComponent(target)}
+function makeVanilliaUrl(target){
+  const url=new URL(getVanilliaEndpoint()+'/vanillia');
+  url.searchParams.set('url',target);
+  const relay=getWisp();
+  if(/^wss:\/\//i.test(relay))url.searchParams.set('server',relay);
+  return url.href;
+}
 
 
 /* NERO tab cloaking: changes the browser tab title and favicon for this app page. */
@@ -205,7 +211,7 @@ function syncProxyEngineSettings(){
   vanilliaEndpointInput.value=load(VANILLIA_ENDPOINT_KEY)||DEFAULT_VANILLIA_ENDPOINT;
   vanilliaEndpointRow.hidden=engine!=='vanillia';
   const wispRow=$('#wisp').closest('.row');
-  if(wispRow)wispRow.hidden=engine!=='scramjet';
+  if(wispRow)wispRow.hidden=false;
   if(engine==='vanillia')checkVanilliaBackend().catch(()=>{});
   else setProxyStatus('Scramjet selected','idle','New websites will use Scramjet');
 }
