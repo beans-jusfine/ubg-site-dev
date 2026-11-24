@@ -16,13 +16,9 @@ function load(k){try{return localStorage.getItem(k)}catch(e){return null}}
 
 /* Selectable proxy engines. VanilliaPXY runs as a separate hosted proxy backend. */
 const PROXY_ENGINE_KEY='nero.proxy.engine.v1';
-const VANILLIA_ENDPOINT_KEY='nero.vanillia.endpoint.v1';
 const DEFAULT_VANILLIA_ENDPOINT='https://nero-vanillia-proxy-dev.onrender.com';
 function getProxyEngine(){return load(PROXY_ENGINE_KEY)==='vanillia'?'vanillia':'scramjet'}
-function getVanilliaEndpoint(){
-  const raw=(load(VANILLIA_ENDPOINT_KEY)||DEFAULT_VANILLIA_ENDPOINT).trim();
-  try{const url=new URL(raw);return url.protocol==='https:'?url.origin:DEFAULT_VANILLIA_ENDPOINT}catch(e){return DEFAULT_VANILLIA_ENDPOINT}
-}
+function getVanilliaEndpoint(){return DEFAULT_VANILLIA_ENDPOINT}
 function makeVanilliaUrl(target){
   const url=new URL(getVanilliaEndpoint()+'/vanillia');
   url.searchParams.set('url',target);
@@ -203,13 +199,9 @@ $('#wisp').value=load('fl-wisp')||'';
 $('#wisp').onchange=e=>{const v=e.target.value.trim();if(v&&!/^wss:\/\//i.test(v)){e.target.value='';save('fl-wisp','')}else save('fl-wisp',v);wispShow()};
 wispShow();
 const proxyEngineSelect=$('#nero-proxy-engine');
-const vanilliaEndpointInput=$('#nero-vanillia-endpoint');
-const vanilliaEndpointRow=$('#nero-vanillia-endpoint-row');
 function syncProxyEngineSettings(){
   const engine=getProxyEngine();
   proxyEngineSelect.value=engine;
-  vanilliaEndpointInput.value=load(VANILLIA_ENDPOINT_KEY)||DEFAULT_VANILLIA_ENDPOINT;
-  vanilliaEndpointRow.hidden=engine!=='vanillia';
   const wispRow=$('#wisp').closest('.row');
   if(wispRow)wispRow.hidden=false;
   if(engine==='vanillia')checkVanilliaBackend().catch(()=>{});
@@ -219,12 +211,6 @@ proxyEngineSelect.addEventListener('change',()=>{
   save(PROXY_ENGINE_KEY,proxyEngineSelect.value==='vanillia'?'vanillia':'scramjet');
   syncProxyEngineSettings();
   toast(proxyEngineSelect.value==='vanillia'?'VanilliaPXY selected for new websites':'Scramjet selected for new websites');
-});
-vanilliaEndpointInput.addEventListener('change',()=>{
-  const raw=vanilliaEndpointInput.value.trim();
-  try{const u=new URL(raw);if(u.protocol!=='https:')throw new Error('https required');save(VANILLIA_ENDPOINT_KEY,u.origin);vanilliaEndpointInput.value=u.origin;toast('VanilliaPXY server saved')}
-  catch(e){vanilliaEndpointInput.value=getVanilliaEndpoint();toast('Enter a valid HTTPS server URL')}
-  if(getProxyEngine()==='vanillia')checkVanilliaBackend().catch(()=>{});
 });
 window.FERNLIGHT={get wispUrl(){return getWisp()}};
 
