@@ -17,7 +17,7 @@ function load(k){try{return localStorage.getItem(k)}catch(e){return null}}
 /* Selectable proxy engines. VanilliaPXY runs as a separate hosted proxy backend. */
 const PROXY_ENGINE_KEY='nero.proxy.engine.v1';
 const VANILLIA_ENDPOINT_KEY='nero.vanillia.endpoint.v1';
-const DEFAULT_VANILLIA_ENDPOINT='https://nero-vanillia-proxy.onrender.com';
+const DEFAULT_VANILLIA_ENDPOINT='https://nero-vanillia-proxy-dev.onrender.com';
 function getProxyEngine(){return load(PROXY_ENGINE_KEY)==='vanillia'?'vanillia':'scramjet'}
 function getVanilliaEndpoint(){
   const raw=(load(VANILLIA_ENDPOINT_KEY)||DEFAULT_VANILLIA_ENDPOINT).trim();
