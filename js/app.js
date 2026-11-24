@@ -206,7 +206,8 @@ function syncProxyEngineSettings(){
   vanilliaEndpointRow.hidden=engine!=='vanillia';
   const wispRow=$('#wisp').closest('.row');
   if(wispRow)wispRow.hidden=engine!=='scramjet';
-  setProxyStatus(engine==='vanillia'?'VanilliaPXY selected':'Scramjet selected',engine==='vanillia'?'ready':'idle',engine==='vanillia'?'New websites will use VanilliaPXY':'New websites will use Scramjet');
+  if(engine==='vanillia')checkVanilliaBackend().catch(()=>{});
+  else setProxyStatus('Scramjet selected','idle','New websites will use Scramjet');
 }
 proxyEngineSelect.addEventListener('change',()=>{
   save(PROXY_ENGINE_KEY,proxyEngineSelect.value==='vanillia'?'vanillia':'scramjet');
@@ -217,6 +218,7 @@ vanilliaEndpointInput.addEventListener('change',()=>{
   const raw=vanilliaEndpointInput.value.trim();
   try{const u=new URL(raw);if(u.protocol!=='https:')throw new Error('https required');save(VANILLIA_ENDPOINT_KEY,u.origin);vanilliaEndpointInput.value=u.origin;toast('VanilliaPXY server saved')}
   catch(e){vanilliaEndpointInput.value=getVanilliaEndpoint();toast('Enter a valid HTTPS server URL')}
+  if(getProxyEngine()==='vanillia')checkVanilliaBackend().catch(()=>{});
 });
 window.FERNLIGHT={get wispUrl(){return getWisp()}};
 
@@ -260,6 +262,29 @@ window.addEventListener('message',event=>{
   if(event.data?.type==='NERO_STELLAR_PLAYER_OPEN')openStellarDirect(event.data.url,event.data.title);
 });
 function setProxyStatus(label,state,title){if(!proxyStatusEl)return;proxyStatusEl.textContent=label;proxyStatusEl.dataset.state=state||'idle';proxyStatusEl.title=title||label;}
+let vanilliaHealthPromise=null;
+function checkVanilliaBackend(){
+  if(vanilliaHealthPromise)return vanilliaHealthPromise;
+  const endpoint=getVanilliaEndpoint();
+  setProxyStatus('Checking VanilliaPXY…','pending','Waking the VanilliaPXY backend and checking its health endpoint');
+  vanilliaHealthPromise=(async()=>{
+    const abort=new AbortController();
+    const timer=setTimeout(()=>abort.abort(),60000);
+    try{
+      const response=await fetch(endpoint+'/health',{cache:'no-store',mode:'cors',signal:abort.signal});
+      if(!response.ok)throw new Error('Health check returned HTTP '+response.status);
+      const data=await response.json();
+      if(data?.status!=='ok')throw new Error('Backend returned an unexpected health response');
+      setProxyStatus('VanilliaPXY online','ready','VanilliaPXY backend is online'+(data.version?' · v'+data.version:''));
+      return data;
+    }finally{clearTimeout(timer)}
+  })().catch(error=>{
+    const message=error?.name==='AbortError'?'Backend health check timed out while waking up':(error?.message||'Could not reach the backend');
+    setProxyStatus('VanilliaPXY offline','error',message);
+    throw new Error(message);
+  }).finally(()=>{vanilliaHealthPromise=null});
+  return vanilliaHealthPromise;
+}
 function loadScript(src){return new Promise((res,rej)=>{const s=document.createElement('script');s.src=src;s.onload=res;s.onerror=()=>rej(new Error('Missing file '+src+'. Did you run the setup and upload the public folder?'));document.head.appendChild(s)})}
 function initProxy(){if(proxyReady)return proxyReady;
 setProxyStatus('Connecting proxy…','pending','Waking and connecting to the NERO proxy');
@@ -428,7 +453,7 @@ function isDirectEmbedAddress(raw){try{const u=new URL(/^https?:\/\//i.test(raw)
 function openUrl(raw,inPage){raw=(raw||'').trim();if(!raw)return;if(isYoutubeAddress(raw))raw='https://nero-tube.onrender.com';const m=raw.match(/^nero:\/\/(\w+)/);if(m&&names[m[1]])return nav(m[1]==='movies'?'tube':m[1]);
 const v=norm(raw);
 if(isDirectEmbedAddress(v)){siteTab(v);return}
-if(getProxyEngine()==='vanillia'){siteTab(v);return}
+if(getProxyEngine()==='vanillia'){checkVanilliaBackend().then(()=>siteTab(v)).catch(e=>toast('VanilliaPXY unavailable: '+e.message));return}
 initProxy().then(()=>siteTab(v)).catch(e=>toast(e.message))}
 $('#newtab').onclick=()=>newTab();
 $('#ext').onclick=()=>{const t=cT();if(t&&t.u)ext(t.u)};
@@ -453,7 +478,7 @@ const navButtons={};
 });
 $('#url').parentElement.insertBefore(navTools,$('#url'));
 proxyStatusEl=document.createElement('button');proxyStatusEl.type='button';proxyStatusEl.className='nero-proxy-status';proxyStatusEl.textContent='Proxy starting…';proxyStatusEl.style.cssText='flex:none;border:1px solid rgba(255,255,255,.12);background:rgba(255,255,255,.05);color:var(--muted,#aaa);border-radius:999px;padding:5px 9px;font:11px/1.2 inherit;white-space:nowrap;cursor:pointer';
-proxyStatusEl.onclick=()=>{if(getProxyEngine()==='vanillia'){toast('VanilliaPXY is selected');return}if(proxyStatusEl.dataset.state==='error'||proxyStatusEl.dataset.state==='idle')initProxy().catch(e=>toast(e.message));};
+proxyStatusEl.onclick=()=>{if(getProxyEngine()==='vanillia'){checkVanilliaBackend().catch(e=>toast(e.message));return}if(proxyStatusEl.dataset.state==='error'||proxyStatusEl.dataset.state==='idle')initProxy().catch(e=>toast(e.message));};
 proxyStatusEl.dataset.state='pending';$('#url').parentElement.insertBefore(proxyStatusEl,$('#url'));
 syncProxyEngineSettings();
 function runNavAction(action){
