@@ -11163,3 +11163,13 @@ body.global-chat-resizing{cursor:col-resize!important;user-select:none!important
   border-radius:14px;overflow:hidden;box-shadow:0 12px 32px rgba(4,16,29,.22);
 }
 :root[data-nero-theme="aero-glass"] #nero-movies-frame{background:transparent}
+
+/* NERO DM media composer */
+#chat-view .nero-dm-compose{position:relative;align-items:center;flex-wrap:nowrap;gap:6px}
+#chat-view .nero-dm-compose>button{flex:none;min-width:34px;height:38px;padding:6px 9px}
+#chat-view .nero-dm-compose>input#nero-dm-input{width:0;flex:1;min-width:0;padding:10px}
+#chat-view .nero-dm-compose .global-chat-emoji-picker,#chat-view .nero-dm-compose .global-chat-gif-picker{left:4px;bottom:calc(100% + 8px);width:min(370px,calc(100vw - 40px));max-height:min(440px,58vh)}
+#chat-view .nero-dm-media-image{display:block;max-width:min(100%,360px);max-height:300px;border-radius:9px;object-fit:contain}
+#chat-view .nero-dm-file-link{display:flex;align-items:center;gap:7px;color:var(--acc);font-size:12px;font-weight:700;overflow-wrap:anywhere}
+#chat-view .nero-dm-file-size{display:block;margin-top:5px;color:var(--mute);font-size:10px}
+@media(max-width:600px){#chat-view .nero-dm-compose{gap:4px;padding:9px}#chat-view .nero-dm-compose>button{min-width:32px;height:40px;padding:5px 7px}#chat-view .nero-dm-compose .global-chat-emoji-picker,#chat-view .nero-dm-compose .global-chat-gif-picker{left:0;width:min(370px,calc(100vw - 30px));max-height:52vh}}
