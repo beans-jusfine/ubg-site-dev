@@ -11173,3 +11173,23 @@ body.global-chat-resizing{cursor:col-resize!important;user-select:none!important
 #chat-view .nero-dm-file-link{display:flex;align-items:center;gap:7px;color:var(--acc);font-size:12px;font-weight:700;overflow-wrap:anywhere}
 #chat-view .nero-dm-file-size{display:block;margin-top:5px;color:var(--mute);font-size:10px}
 @media(max-width:600px){#chat-view .nero-dm-compose{gap:4px;padding:9px}#chat-view .nero-dm-compose>button{min-width:32px;height:40px;padding:5px 7px}#chat-view .nero-dm-compose .global-chat-emoji-picker,#chat-view .nero-dm-compose .global-chat-gif-picker{left:0;width:min(370px,calc(100vw - 30px));max-height:52vh}}
+
+/* Keep the profile close control styling off the Message action. */
+.global-chat-public-profile>.global-chat-open-dm{
+  align-self:stretch;
+  width:100%;
+  margin-top:10px;
+  padding:9px 12px;
+  border:1px solid var(--acc);
+  border-radius:9px;
+  background:color-mix(in srgb,var(--acc) 10%,var(--panel));
+  color:var(--text);
+  font-size:13px;
+  font-weight:700;
+  line-height:1.4;
+  transform:none;
+}
+.global-chat-public-profile>.global-chat-open-dm:hover{
+  transform:none;
+  background:color-mix(in srgb,var(--acc) 18%,var(--panel));
+}
