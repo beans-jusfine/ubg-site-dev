@@ -15,6 +15,7 @@
     .nero-auth-field{display:block;margin:12px 0;font-size:12px;color:var(--mute)}.nero-auth-field input{display:block;width:100%;box-sizing:border-box;margin-top:6px;padding:12px;border:1px solid var(--line);border-radius:10px;background:var(--bg);color:var(--text);font:inherit}
     .nero-auth-submit{width:100%;margin-top:10px}.nero-auth-message{min-height:20px;margin:12px 0 0;font-size:12px;color:var(--mute);overflow-wrap:anywhere}
     .nero-auth-message.error{color:#f87171}.nero-auth-message.success{color:#4ade80}
+    #nero-auth-overlay [hidden]{display:none!important}
     .nero-auth-profile{display:flex;align-items:center;gap:12px;padding:14px;border:1px solid var(--line);border-radius:12px;margin-bottom:14px}
     .nero-auth-avatar{width:42px;height:42px;border-radius:50%;display:grid;place-items:center;background:var(--bg);font-weight:800;font-size:18px}
     .nero-auth-profile small{display:block;color:var(--mute);margin-top:3px}.nero-auth-card[hidden]{display:none}
