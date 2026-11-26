@@ -14,6 +14,7 @@
     .nero-auth-tabs button{border:0;border-radius:8px;padding:9px;background:transparent;color:var(--mute);cursor:pointer}.nero-auth-tabs button.active{background:var(--bg);color:var(--text)}
     .nero-auth-field{display:block;margin:12px 0;font-size:12px;color:var(--mute)}.nero-auth-field input{display:block;width:100%;box-sizing:border-box;margin-top:6px;padding:12px;border:1px solid var(--line);border-radius:10px;background:var(--bg);color:var(--text);font:inherit}
     .nero-auth-submit{width:100%;margin-top:10px}.nero-auth-message{min-height:20px;margin:12px 0 0;font-size:12px;color:var(--mute);overflow-wrap:anywhere}
+    .nero-auth-password-tools{display:flex;align-items:center;gap:8px;margin-top:6px}.nero-auth-password-tools input{flex:1;min-width:0}.nero-auth-eye{border:1px solid var(--line);border-radius:8px;background:var(--bg);color:var(--text);padding:9px 11px;cursor:pointer;font-size:12px}.nero-auth-hint{font-size:11px;margin:5px 0 0;min-height:15px}.nero-auth-hint.good{color:#4ade80}.nero-auth-hint.bad{color:#f87171}.nero-auth-forgot{display:block;margin:10px auto 0;border:0;background:none;color:var(--mute);font-size:12px;text-decoration:underline;cursor:pointer}
     .nero-auth-message.error{color:#f87171}.nero-auth-message.success{color:#4ade80}
     #nero-auth-overlay [hidden]{display:none!important}
     .nero-auth-profile{display:flex;align-items:center;gap:12px;padding:14px;border:1px solid var(--line);border-radius:12px;margin-bottom:14px}
@@ -27,11 +28,11 @@
     <section class="nero-auth-card" role="dialog" aria-modal="true" aria-labelledby="nero-auth-title">
       <div class="nero-auth-head"><h2 id="nero-auth-title">NERO account</h2><button class="nero-auth-close" id="nero-auth-close" aria-label="Close">×</button></div>
       <div id="nero-auth-form-view"><div class="nero-auth-tabs"><button type="button" id="nero-auth-login-tab" class="active">Sign in</button><button type="button" id="nero-auth-signup-tab">Create account</button></div>
-        <form id="nero-auth-form"><label class="nero-auth-field" id="nero-auth-username-wrap" hidden>Username<input id="nero-auth-username" type="text" minlength="3" maxlength="24" autocomplete="username" placeholder="letters, numbers, underscore"></label>
+        <form id="nero-auth-form"><label class="nero-auth-field" id="nero-auth-username-wrap" hidden>Username<input id="nero-auth-username" type="text" minlength="3" maxlength="24" autocomplete="username" placeholder="letters, numbers, underscore"><small class="nero-auth-hint" id="nero-username-hint"></small></label>
           <label class="nero-auth-field" id="nero-auth-login-username-wrap">Username<input id="nero-auth-login-username" type="text" autocomplete="username" required minlength="3" maxlength="24" placeholder="Your NERO username"></label>
-          <label class="nero-auth-field">Password<input id="nero-auth-password" type="password" autocomplete="current-password" required minlength="8" maxlength="72" placeholder="At least 8 characters"></label>
-          <label class="nero-auth-field" id="nero-auth-confirm-wrap" hidden>Confirm password<input id="nero-auth-confirm" type="password" autocomplete="new-password" minlength="8" maxlength="72" placeholder="Enter password again"></label>
-          <button class="btn nero-auth-submit" id="nero-auth-submit" type="submit">Sign in</button></form><p class="nero-auth-message" id="nero-auth-message" role="status"></p></div>
+          <label class="nero-auth-field">Password<div class="nero-auth-password-tools"><input id="nero-auth-password" type="password" autocomplete="current-password" required minlength="8" maxlength="72" placeholder="At least 8 characters"><button class="nero-auth-eye" type="button" data-nero-toggle-password aria-label="Show password">Show</button></div><small class="nero-auth-hint" id="nero-password-hint"></small></label>
+          <label class="nero-auth-field" id="nero-auth-confirm-wrap" hidden>Confirm password<div class="nero-auth-password-tools"><input id="nero-auth-confirm" type="password" autocomplete="new-password" minlength="8" maxlength="72" placeholder="Enter password again"><button class="nero-auth-eye" type="button" data-nero-toggle-password aria-label="Show password">Show</button></div><small class="nero-auth-hint" id="nero-confirm-hint"></small></label>
+          <button class="btn nero-auth-submit" id="nero-auth-submit" type="submit">Sign in</button><button class="nero-auth-forgot" id="nero-auth-forgot" type="button">Forgot password?</button></form><p class="nero-auth-message" id="nero-auth-message" role="status"></p></div>
       <div id="nero-auth-account-view" hidden><div class="nero-auth-profile"><div class="nero-auth-avatar" id="nero-auth-avatar">N</div><div><strong id="nero-auth-profile-name"></strong><small id="nero-auth-profile-email"></small></div></div>
         <p class="nero-auth-message" id="nero-auth-account-message"></p>
         <button class="ghost" id="nero-profile-view" type="button" style="width:100%;margin-bottom:9px">View public profile</button>
@@ -46,7 +47,7 @@
     </section>`;document.body.appendChild(overlay);
   const $=s=>document.querySelector(s);let mode='login',busy=false;
   function message(t,type=''){const el=$('#nero-auth-message');el.textContent=t;el.className='nero-auth-message '+type}
-  function setMode(next){mode=next;$('#nero-auth-login-tab').classList.toggle('active',mode==='login');$('#nero-auth-signup-tab').classList.toggle('active',mode==='signup');$('#nero-auth-username-wrap').hidden=mode!=='signup';$('#nero-auth-username').required=mode==='signup';$('#nero-auth-login-username-wrap').hidden=mode!=='login';$('#nero-auth-login-username').required=mode==='login';$('#nero-auth-password').autocomplete=mode==='signup'?'new-password':'current-password';$('#nero-auth-confirm-wrap').hidden=mode!=='signup';$('#nero-auth-login-username').value='';$('#nero-auth-submit').textContent=mode==='signup'?'Create account':'Sign in';$('#nero-auth-title').textContent=mode==='signup'?'Create your NERO account':'Sign in to NERO';message('')}
+  function setMode(next){mode=next;clearTimeout(usernameCheckTimer);usernameCheckToken++;setHint('nero-username-hint','');setHint('nero-password-hint','');setHint('nero-confirm-hint','');$('#nero-auth-forgot').hidden=mode==='signup';$('#nero-auth-login-tab').classList.toggle('active',mode==='login');$('#nero-auth-signup-tab').classList.toggle('active',mode==='signup');$('#nero-auth-username-wrap').hidden=mode!=='signup';$('#nero-auth-username').required=mode==='signup';$('#nero-auth-login-username-wrap').hidden=mode!=='login';$('#nero-auth-login-username').required=mode==='login';$('#nero-auth-password').autocomplete=mode==='signup'?'new-password':'current-password';$('#nero-auth-confirm-wrap').hidden=mode!=='signup';$('#nero-auth-login-username').value='';$('#nero-auth-submit').textContent=mode==='signup'?'Create account':'Sign in';$('#nero-auth-title').textContent=mode==='signup'?'Create your NERO account':'Sign in to NERO';message('')}
   function show(open=true){overlay.classList.toggle('open',open);if(open){if(window.NERO_AUTH.user)renderAccount();else{$('#nero-auth-form-view').hidden=false;$('#nero-auth-account-view').hidden=true;$('#nero-auth-login-username').focus()}}}
   async function ensureProfile(user){if(!user)return null;let {data,error}=await client.from('profiles').select('id,username,display_name,bio,avatar_path').eq('id',user.id).maybeSingle();if(error)throw error;if(data)return data;
     const emailName=String(user.email||'').split('@')[0].replace(/[^A-Za-z0-9_]/g,'').slice(0,24);const username=String(user.user_metadata?.username||emailName||'').trim();if(!/^[A-Za-z0-9_]{3,24}$/.test(username))throw new Error('Your profile could not be created because your account has no valid username.');
@@ -58,14 +59,44 @@
     renderAccount();window.dispatchEvent(new CustomEvent('nero:auth-change',{detail:{user:window.NERO_AUTH.user,profile:window.NERO_AUTH.profile}}))}
   accountButton.addEventListener('click',()=>show(true));$('#nero-auth-close').onclick=()=>show(false);overlay.addEventListener('click',e=>{if(e.target===overlay)show(false)});
   $('#nero-auth-login-tab').onclick=()=>setMode('login');$('#nero-auth-signup-tab').onclick=()=>setMode('signup');
+  // Password visibility and account-form feedback.
+  overlay.querySelectorAll('[data-nero-toggle-password]').forEach(toggle=>toggle.addEventListener('click',()=>{
+    const input=toggle.parentElement.querySelector('input');const reveal=input.type==='password';input.type=reveal?'text':'password';toggle.textContent=reveal?'Hide':'Show';toggle.setAttribute('aria-label',reveal?'Hide password':'Show password');
+  }));
+  $('#nero-auth-forgot').addEventListener('click',()=>message('Password recovery is not available yet because NERO accounts do not have a recovery email. Add a verified email to enable resets.','error'));
+  let usernameCheckTimer=null,usernameCheckToken=0;
+  function setHint(id,text,type=''){const el=$('#'+id);if(el){el.textContent=text;el.className='nero-auth-hint '+type}}
+  async function checkSignupUsername(){
+    const username=$('#nero-auth-username').value.trim();const token=++usernameCheckToken;
+    if(mode!=='signup'||!username){setHint('nero-password-hint','');return}
+    if(!/^[A-Za-z0-9_]{3,24}$/.test(username)){setHint('nero-password-hint','');return}
+    setHint('nero-username-hint','Checking username…');
+    const {data,error}=await client.from('profiles').select('id').ilike('username',username).limit(1);
+    if(token!==usernameCheckToken)return;
+    if(error){setHint('nero-username-hint','Could not check username right now.');return}
+    setHint('nero-username-hint',data?.length?'That username is already taken.':'Username is available.',data?.length?'bad':'good');
+  }
+  function validateLive(){
+    if(mode!=='signup')return;
+    const username=$('#nero-auth-username').value.trim(),password=$('#nero-auth-password').value,confirm=$('#nero-auth-confirm').value;
+    if(username&&!/^[A-Za-z0-9_]{3,24}$/.test(username))setHint('nero-username-hint','Use 3–24 letters, numbers, or underscores.','bad');
+    if(password&&password.length<8)setHint('nero-password-hint','Password must be at least 8 characters.','bad');
+    else setHint('nero-password-hint','');
+    if(confirm&&password!==confirm)setHint('nero-confirm-hint','Passwords do not match.','bad');
+    else if(confirm)setHint('nero-confirm-hint','Passwords match.','good');
+    else setHint('nero-confirm-hint','');
+  }
+  $('#nero-auth-username').addEventListener('input',()=>{clearTimeout(usernameCheckTimer);setHint('nero-username-hint','');usernameCheckTimer=setTimeout(checkSignupUsername,350);validateLive()});
+  $('#nero-auth-password').addEventListener('input',validateLive);$('#nero-auth-confirm').addEventListener('input',validateLive);
+
   $('#nero-auth-form').addEventListener('submit',async e=>{e.preventDefault();if(busy)return;busy=true;const btn=$('#nero-auth-submit');btn.disabled=true;
-    const password=$('#nero-auth-password').value,username=(mode==='signup'?$('#nero-auth-username').value:$('#nero-auth-login-username').value).trim();
+    const originalLabel=btn.textContent;const password=$('#nero-auth-password').value,username=(mode==='signup'?$('#nero-auth-username').value:$('#nero-auth-login-username').value).trim();btn.textContent=mode==='signup'?'Creating account…':'Signing in…';
     try{if(mode==='signup'){if(!/^[A-Za-z0-9_]{3,24}$/.test(username))throw new Error('Username must be 3–24 characters using letters, numbers, or underscores.');if(password.length<8)throw new Error('Password must be at least 8 characters.');if(password!==$('#nero-auth-confirm').value)throw new Error('Your passwords do not match.');
       const check=await client.from('profiles').select('id').ilike('username',username).limit(1);if(check.error)throw check.error;if(check.data?.length)throw new Error('That username is already taken.');
       const email=username.toLowerCase()+'@accounts.nero.invalid';const {data,error}=await client.auth.signUp({email,password,options:{data:{username}}});if(error)throw error;
       if(data.session){await refresh(data.user);show(false);return}message('Account created. Sign in with your username and password.','success');
     }else{if(!/^[A-Za-z0-9_]{3,24}$/.test(username))throw new Error('Enter a valid NERO username.');const email=username.toLowerCase()+'@accounts.nero.invalid';const {data,error}=await client.auth.signInWithPassword({email,password});if(error)throw error;await refresh(data.user);show(false)}}
-    catch(err){const detail=err?.code==='email_provider_disabled'?'NERO signups are disabled in Supabase. Enable the Email provider in Authentication → Sign In / Providers.':(err.message||'Could not complete account request');message(detail,'error')}finally{busy=false;btn.disabled=false}});
+    catch(err){const detail=err?.code==='email_provider_disabled'?'NERO signups are disabled in Supabase. Enable the Email provider in Authentication → Sign In / Providers.':(err.message||'Could not complete account request');message(detail,'error')}finally{busy=false;btn.disabled=false;btn.textContent=originalLabel}});
   $('#nero-profile-view').addEventListener('click',()=>{show(false);window.dispatchEvent(new CustomEvent('nero:open-own-profile'))});
   $('#nero-profile-edit-toggle').addEventListener('click',()=>{const panel=$('#nero-profile-editor');panel.hidden=!panel.hidden;const p=window.NERO_AUTH.profile||{};$('#nero-profile-display-name').value=p.display_name||'';$('#nero-profile-bio').value=p.bio||''});
   $('#nero-profile-save').addEventListener('click',async()=>{const u=window.NERO_AUTH.user,p=window.NERO_AUTH.profile;if(!u||!p)return;const btn=$('#nero-profile-save');btn.disabled=true;try{let avatar_path=p.avatar_path||null;const file=$('#nero-profile-avatar-file').files?.[0];if(file){if(!['image/jpeg','image/png','image/webp'].includes(file.type)||file.size>2*1024*1024)throw new Error('Use a JPG, PNG, or WEBP image under 2 MB.');const path=u.id+'/'+crypto.randomUUID()+'.'+file.name.split('.').pop().toLowerCase();const {error:uploadError}=await client.storage.from('profile-avatars').upload(path,file,{contentType:file.type,upsert:false});if(uploadError)throw uploadError;avatar_path=path}
