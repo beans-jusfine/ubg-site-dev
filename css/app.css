@@ -11224,3 +11224,38 @@ body.global-chat-resizing{cursor:col-resize!important;user-select:none!important
 :root[data-nero-palette="amoled"] .shortcut,
 :root[data-nero-palette="amoled"] #player .box,
 :root[data-nero-palette="amoled"] .memory-panel{background:#050505;border-color:#191919}
+
+/* Refined settings layout */
+#settings {max-width:1040px;margin:0 auto;padding-bottom:56px}
+#settings .settings-heading {display:flex;align-items:center;justify-content:space-between;gap:18px;margin:4px 0 28px;padding:25px 26px;border:1px solid var(--line);border-radius:20px;background:linear-gradient(135deg,color-mix(in srgb,var(--panel) 86%,var(--acc) 14%),var(--panel));box-shadow:0 18px 50px -38px #000}
+#settings .settings-eyebrow {display:block;margin-bottom:8px;color:var(--acc);font-size:10px;font-weight:750;letter-spacing:.18em}
+#settings .settings-heading h1 {margin:0;font-size:30px;letter-spacing:-.045em;text-transform:none}
+#settings .settings-heading .sub {margin:6px 0 0;color:var(--mute);font-size:13px}
+#settings .settings-mark {width:54px;height:54px;display:grid;place-items:center;border:1px solid color-mix(in srgb,var(--line),var(--acc) 35%);border-radius:16px;background:color-mix(in srgb,var(--panel) 72%,var(--acc) 28%);color:var(--acc);font-size:22px}
+#settings .settings-layout {display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:16px;width:100%;max-width:none}
+#settings .settings-card {min-width:0;padding:20px 21px;border:1px solid var(--line);border-radius:17px;background:color-mix(in srgb,var(--panel) 94%,var(--acc) 6%);box-shadow:0 14px 36px -32px #000}
+#settings .settings-card:first-child {grid-row:span 2}
+#settings .settings-card-head {display:flex;align-items:center;gap:12px;margin-bottom:17px}
+#settings .settings-card-icon {width:38px;height:38px;flex:none;display:grid;place-items:center;border-radius:12px;background:color-mix(in srgb,var(--panel) 72%,var(--acc) 28%);color:var(--acc)}
+#settings .settings-card-head h2 {margin:0;padding:0;border:0;font-size:15px;letter-spacing:-.015em;text-transform:none}
+#settings .settings-card-head p {margin:4px 0 0;color:var(--mute);font-size:11px;line-height:1.45}
+#settings .settings-card .grp {margin:17px 0 0}
+#settings .settings-card .gl {font-size:12px;font-weight:650}
+#settings .settings-card .opts {grid-template-columns:repeat(auto-fit,minmax(105px,1fr));gap:8px}
+#settings .settings-card .opt {min-height:82px;padding:12px;border-radius:12px}
+#settings .settings-field {display:flex;align-items:center;justify-content:space-between;gap:18px;padding:14px 0;border-top:1px solid var(--line)}
+#settings .settings-field>div:first-child {min-width:0;display:flex;flex-direction:column;gap:4px}
+#settings .settings-field b {font-size:12px;font-weight:620}
+#settings .settings-field small {color:var(--mute);font-size:10px;line-height:1.45}
+#settings .settings-field>select,#settings .settings-field>.search {width:min(52%,240px);flex:none}
+#settings .settings-field .ctl {display:flex;align-items:center;justify-content:flex-end;gap:8px;min-width:0;flex:1}
+#settings .settings-field input[type=file] {width:min(100%,230px);font-size:11px}
+#settings .settings-field input[type=range] {width:120px;flex:none}
+#settings .settings-field .ctl input[type=file] {flex:1}
+#settings .set>h2 {margin-top:28px}
+#settings .nero-theme-settings {grid-column:1/-1;padding:20px;border:1px solid var(--line);border-radius:17px;background:var(--panel)}
+#settings .nero-theme-settings .gl {font-size:14px;font-weight:700}
+#settings .nero-theme-settings .row {border-top:1px solid var(--line)}
+#settings .nero-theme-settings .row:first-of-type {border-top:0}
+@media(max-width:720px) {#settings .settings-layout{grid-template-columns:1fr}#settings .settings-card:first-child{grid-row:auto}}
+@media(max-width:520px) {#settings .settings-heading{padding:20px;border-radius:16px}#settings .settings-heading h1{font-size:26px}#settings .settings-card{padding:16px}#settings .settings-field{align-items:flex-start;flex-direction:column;gap:10px}#settings .settings-field>select,#settings .settings-field>.search{width:100%}#settings .settings-field .ctl{width:100%;justify-content:flex-start}#settings .settings-field input[type=range]{width:100%}}

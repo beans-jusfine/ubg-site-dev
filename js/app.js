@@ -167,15 +167,7 @@ function restoreTabCloak(){
 }
 window.addEventListener('pageshow',restoreTabCloak);
 
-function applyMode(m){const r=document.documentElement;if(m==='black')r.removeAttribute('data-mode');else r.dataset.mode=m;$('#mode').value=m;save('fl-mode',m)}
-function applyWall(on){document.documentElement.dataset.wall=on?'on':'off';$('#wall').checked=on;save('fl-wall',on?'1':'0')}
-$('#mode').onchange=e=>applyMode(e.target.value);$('#wall').onchange=e=>applyWall(e.target.checked);
-applyMode(load('fl-mode')||'black');applyWall(load('fl-wall')!=='0');
-
 const root=document.documentElement;
-function setAcc(c){if(c){root.style.setProperty('--acc',c);$('#acc').value=c}else root.style.removeProperty('--acc');save('fl-acc',c||'')}
-$('#acc').oninput=e=>setAcc(e.target.value);$('#accR').onclick=()=>setAcc('');
-if(load('fl-acc'))setAcc(load('fl-acc'));
 function setWp(u){if(u){$('#wp').style.backgroundImage='url("'+u+'")';root.dataset.cw='on'}else{$('#wp').style.backgroundImage='';delete root.dataset.cw}save('fl-wp',u||'')}
 $('#wpf').onchange=e=>{const f=e.target.files[0];if(!f)return;const r=new FileReader();r.onload=()=>{const img=new Image();img.onload=()=>{const s=Math.min(1,1600/Math.max(img.width,img.height)),c=document.createElement('canvas');c.width=img.width*s;c.height=img.height*s;c.getContext('2d').drawImage(img,0,0,c.width,c.height);setWp(c.toDataURL('image/jpeg',.75))};img.src=r.result};r.readAsDataURL(f)};
 $('#wpC').onclick=()=>{setWp('');$('#wpf').value=''};
