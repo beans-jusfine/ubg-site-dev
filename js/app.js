@@ -436,8 +436,8 @@ t.engine='scramjet';frame.go(v);
 }
 f.title=h;draw()}
 function isYoutubeAddress(raw){let value=String(raw||'').trim();if(!value)return false;try{const u=new URL(/^\/\//.test(value)?'https:'+value:/^[a-z][a-z0-9+.-]*:\/\//i.test(value)?value:'https://'+value);const host=u.hostname.toLowerCase().replace(/\.$/,'');return /(^|\.)(youtube\.com|youtube-nocookie\.com|youtu\.be)$/.test(host)}catch(e){return false}}
-function isDirectEmbedAddress(raw){try{const u=new URL(/^https?:\/\//i.test(raw)?raw:'https://'+String(raw||'').trim());return /(^|\.)(nero-tube\.onrender\.com|figurestand\.workerlo\.workers\.dev)$/i.test(u.hostname)}catch(e){return false}}
-function openUrl(raw,inPage){raw=(raw||'').trim();if(!raw)return;if(isYoutubeAddress(raw))raw='https://nero-tube.onrender.com';const m=raw.match(/^nero:\/\/(\w+)/);if(m&&names[m[1]])return nav(m[1]==='movies'?'tube':m[1]);
+function isDirectEmbedAddress(raw){try{const u=new URL(/^https?:\/\//i.test(raw)?raw:'https://'+String(raw||'').trim());return /(^|\.)(nero-tube\.pages\.dev|nero-tube\.onrender\.com|figurestand\.workerlo\.workers\.dev)$/i.test(u.hostname)}catch(e){return false}}
+function openUrl(raw,inPage){raw=(raw||'').trim();if(!raw)return;if(isYoutubeAddress(raw))raw='https://nero-tube.pages.dev/';const m=raw.match(/^nero:\/\/(\w+)/);if(m&&names[m[1]])return nav(m[1]==='movies'?'tube':m[1]);
 const v=norm(raw);
 if(isDirectEmbedAddress(v)){siteTab(v);return}
 if(getProxyEngine()==='vanillia'){checkVanilliaBackend().then(()=>siteTab(v)).catch(e=>toast('VanilliaPXY unavailable: '+e.message));return}
@@ -502,7 +502,7 @@ document.addEventListener('keydown',e=>{
 });
 
 $$('[data-i]').forEach(e=>e.innerHTML=ico(e.dataset.i,24));
-const DEFAULT_SHORTCUTS=[['YouTube','https://nero-tube.onrender.com','https://www.youtube.com/favicon.ico'],['Discord','https://discord.com','https://discord.com/favicon.ico'],['GeForce NOW','https://play.geforcenow.com','https://play.geforcenow.com/favicon.ico'],['TikTok','https://www.tiktok.com','https://www.tiktok.com/favicon.ico'],['now.gg','https://nowgg.fun','https://nowgg.fun/favicon.ico']];
+const DEFAULT_SHORTCUTS=[['YouTube','https://nero-tube.pages.dev/','https://www.youtube.com/favicon.ico'],['Discord','https://discord.com','https://discord.com/favicon.ico'],['GeForce NOW','https://play.geforcenow.com','https://play.geforcenow.com/favicon.ico'],['TikTok','https://www.tiktok.com','https://www.tiktok.com/favicon.ico'],['now.gg','https://nowgg.fun','https://nowgg.fun/favicon.ico']];
 const SHORTCUT_KEY='nero.home.shortcuts.v1';
 function readShortcuts(){try{const saved=JSON.parse(localStorage.getItem(SHORTCUT_KEY)||'[]');return Array.isArray(saved)?saved.filter(x=>x&&typeof x.name==='string'&&typeof x.url==='string'&&typeof x.icon==='string'):[]}catch(e){return[]}}
 let customShortcuts=readShortcuts();
