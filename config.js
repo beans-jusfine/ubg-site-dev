@@ -1,6 +1,6 @@
 /* NERO service configuration */
 window.NERO_CONFIG = Object.freeze({
-  wisp: 'wss://nero-wisp.jason294022.workers.dev/wisp/',
+  wisp: 'wss://nero-wisp-production.up.railway.app/wisp/',
   ai: 'https://nero-ai-fl.jason294022.workers.dev/',
   supabaseUrl: 'https://rxifrrzyqomzmrtpvhyl.supabase.co',
   supabaseKey: 'sb_publishable_jbpzE10aJ91jYQcWP-vt5A_yuH3jBNl',
