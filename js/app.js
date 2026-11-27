@@ -60,7 +60,7 @@ function updateNeroThemeFavicon(){
 }
 function syncNeroMoviesTheme(theme=load(NERO_THEME_KEY)||'default',color=load(NERO_AERO_COLOR_KEY)||'blue'){
   const frame=$('#nero-movies-frame');
-  frame?.contentWindow?.postMessage({type:'NERO_THEME_SYNC',theme:theme==='aero-glass'?'aero-glass':'default',color},'https://nero-movies.onrender.com');
+  frame?.contentWindow?.postMessage({type:'NERO_THEME_SYNC',theme:theme==='aero-glass'?'aero-glass':'default',color},'https://ubg-site-movies.pages.dev');
 }
 $('#nero-movies-frame')?.addEventListener('load',()=>syncNeroMoviesTheme());
 function applyNeroTheme(theme,color,persist=true){
@@ -357,7 +357,7 @@ const names={home:'new tab',tube:'Movies',games:'games',chat:'global chat',messa
 let tabs=[],cur=0,nid=0;
 const cT=()=>tabs.find(x=>x.id===cur);
 function newTab(v){v=v||'home';const t={id:++nid,v,src:'',u:'',title:names[v]};tabs.push(t);cur=t.id;draw()}
-function nav(v){const t=cT(),f=$('#f'+t.id);if(f)f.remove();proxyFrames.delete(t.id);t.v=v;t.src='';t.u='';t.title=names[v];draw();if(v==='games')initLumin().catch(e=>toast(e.message));if(v==='tube'){const movieFrame=$('#nero-movies-frame');if(movieFrame){proxyFrames.delete('nero-movies');movieFrame.src='https://nero-movies.onrender.com/';movieFrame.title='NERO Movies';movieFrame.allow='fullscreen; autoplay; picture-in-picture';movieFrame.allowFullscreen=true}}}
+function nav(v){const t=cT(),f=$('#f'+t.id);if(f)f.remove();proxyFrames.delete(t.id);t.v=v;t.src='';t.u='';t.title=names[v];draw();if(v==='games')initLumin().catch(e=>toast(e.message));if(v==='tube'){const movieFrame=$('#nero-movies-frame');if(movieFrame){proxyFrames.delete('nero-movies');movieFrame.src='https://ubg-site-movies.pages.dev/';movieFrame.title='NERO Movies';movieFrame.allow='fullscreen; autoplay; picture-in-picture';movieFrame.allowFullscreen=true}}}
 function closeTab(id){const i=tabs.findIndex(t=>t.id===id),f=$('#f'+id);if(f)f.remove();proxyFrames.delete(id);tabs.splice(i,1);if(!tabs.length)return newTab();if(cur===id)cur=tabs[Math.max(0,i-1)].id;draw()}
 
 function renameTab(id){
