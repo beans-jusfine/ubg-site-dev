@@ -50,7 +50,7 @@ function updateNeroThemeFavicon(){
 }
 function syncNeroMoviesTheme(theme=load(NERO_THEME_KEY)||'default',color=load(NERO_AERO_COLOR_KEY)||'blue'){
   const frame=$('#nero-movies-frame');
-  frame?.contentWindow?.postMessage({type:'NERO_THEME_SYNC',theme:theme==='aero-glass'?'aero-glass':'default',color},'https://ubg-site-movies.pages.dev');
+  frame?.contentWindow?.postMessage({type:'NERO_THEME_SYNC',theme:NERO_THEMES.includes(theme)?theme:'default',color},'https://ubg-site-movies.pages.dev');
 }
 $('#nero-movies-frame')?.addEventListener('load',()=>syncNeroMoviesTheme());
 function applyNeroTheme(theme,color,persist=true){
