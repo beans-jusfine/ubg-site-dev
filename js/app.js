@@ -14,18 +14,8 @@ function initLumin(){if(luminInitialized)return Promise.resolve();if(luminPromis
 function save(k,v){try{localStorage.setItem(k,v)}catch(e){}}
 function load(k){try{return localStorage.getItem(k)}catch(e){return null}}
 
-/* Selectable proxy engines. VanilliaPXY runs as a separate hosted proxy backend. */
-const PROXY_ENGINE_KEY='nero.proxy.engine.v1';
-const DEFAULT_VANILLIA_ENDPOINT=window.NERO_CONFIG.vanillia || 'https://rxifrrzyqomzmrtpvhyl.supabase.co/functions/v1/nero-vpxy';
-function getProxyEngine(){return load(PROXY_ENGINE_KEY)==='vanillia'?'vanillia':'scramjet'}
-function getVanilliaEndpoint(){return DEFAULT_VANILLIA_ENDPOINT}
-function makeVanilliaUrl(target){
-  const url=new URL(getVanilliaEndpoint()+'/vanillia');
-  url.searchParams.set('url',target);
-  const relay=getWisp();
-  if(/^wss:\/\//i.test(relay))url.searchParams.set('server',relay);
-  return url.href;
-}
+/* NERO uses Scramjet as its only browser proxy engine. */
+try{localStorage.removeItem('nero.proxy.engine.v1')}catch(e){}
 
 
 /* NERO tab cloaking: changes the browser tab title and favicon for this app page. */
@@ -193,20 +183,8 @@ function wispShow(){$('#wst').textContent='status: '+wispState()}
 $('#wisp').value=load('fl-wisp')||'';
 $('#wisp').onchange=e=>{const v=e.target.value.trim();if(v&&!/^wss:\/\//i.test(v)){e.target.value='';save('fl-wisp','')}else save('fl-wisp',v);wispShow()};
 wispShow();
-const proxyEngineSelect=$('#nero-proxy-engine');
-function syncProxyEngineSettings(){
-  const engine=getProxyEngine();
-  proxyEngineSelect.value=engine;
-  const wispRow=$('#wisp').closest('.row');
-  if(wispRow)wispRow.hidden=false;
-  if(engine==='vanillia')checkVanilliaBackend().catch(()=>{});
-  else setProxyStatus('Scramjet selected','idle','New websites will use Scramjet');
-}
-proxyEngineSelect.addEventListener('change',()=>{
-  save(PROXY_ENGINE_KEY,proxyEngineSelect.value==='vanillia'?'vanillia':'scramjet');
-  syncProxyEngineSettings();
-  toast(proxyEngineSelect.value==='vanillia'?'VanilliaPXY selected for new websites':'Scramjet selected for new websites');
-});
+/* Remove the retired proxy-engine selector from older cached app markup. */
+$('#nero-proxy-engine')?.closest('.row')?.remove();
 window.FERNLIGHT={get wispUrl(){return getWisp()}};
 
 let proxyReady=null,controller=null,EpoxyClientClass=null,proxyStatusEl=null;
@@ -249,29 +227,6 @@ window.addEventListener('message',event=>{
   if(event.data?.type==='NERO_STELLAR_PLAYER_OPEN')openStellarDirect(event.data.url,event.data.title);
 });
 function setProxyStatus(label,state,title){if(!proxyStatusEl)return;proxyStatusEl.textContent=label;proxyStatusEl.dataset.state=state||'idle';proxyStatusEl.title=title||label;}
-let vanilliaHealthPromise=null;
-function checkVanilliaBackend(){
-  if(vanilliaHealthPromise)return vanilliaHealthPromise;
-  const endpoint=getVanilliaEndpoint();
-  setProxyStatus('Checking VanilliaPXY…','pending','Waking the VanilliaPXY backend and checking its health endpoint');
-  vanilliaHealthPromise=(async()=>{
-    const abort=new AbortController();
-    const timer=setTimeout(()=>abort.abort(),60000);
-    try{
-      const response=await fetch(endpoint+'/health',{cache:'no-store',mode:'cors',signal:abort.signal});
-      if(!response.ok)throw new Error('Health check returned HTTP '+response.status);
-      const data=await response.json();
-      if(data?.status!=='ok')throw new Error('Backend returned an unexpected health response');
-      setProxyStatus('VanilliaPXY online','ready','VanilliaPXY backend is online'+(data.version?' · v'+data.version:''));
-      return data;
-    }finally{clearTimeout(timer)}
-  })().catch(error=>{
-    const message=error?.name==='AbortError'?'Backend health check timed out while waking up':(error?.message||'Could not reach the backend');
-    setProxyStatus('VanilliaPXY offline','error',message);
-    throw new Error(message);
-  }).finally(()=>{vanilliaHealthPromise=null});
-  return vanilliaHealthPromise;
-}
 function loadScript(src){return new Promise((res,rej)=>{const s=document.createElement('script');s.src=src;s.onload=res;s.onerror=()=>rej(new Error('Missing file '+src+'. Did you run the setup and upload the public folder?'));document.head.appendChild(s)})}
 function initProxy(){if(proxyReady)return proxyReady;
 setProxyStatus('Connecting proxy…','pending','Waking and connecting to the NERO proxy');
@@ -412,7 +367,7 @@ function showTabMenu(id,x,y){
 document.addEventListener('pointerdown',e=>{if(!tabMenu.contains(e.target))hideTabMenu()});
 document.addEventListener('keydown',e=>{if(e.key==='Escape')hideTabMenu()});
 document.addEventListener('keydown',e=>{if(e.key==='Escape'&&document.getElementById('nero-stellar-direct-overlay'))closeStellarDirect()});
-function draw(){const t=cT();show(t.v);Object.entries(navButtons).forEach(([k,b])=>{b.disabled=k!=='home'&&(t.v!=='site'||(t.engine==='vanillia'&&(k==='back'||k==='forward')));b.style.opacity=b.disabled?'.4':'1';b.style.cursor=b.disabled?'default':'pointer'});
+function draw(){const t=cT();show(t.v);Object.entries(navButtons).forEach(([k,b])=>{b.disabled=k!=='home'&&t.v!=='site';b.style.opacity=b.disabled?'.4':'1';b.style.cursor=b.disabled?'default':'pointer'});
 $$('#sites iframe').forEach(f=>f.style.display=f.id==='f'+t.id?'block':'none');
 $('#url').value=t.v==='site'?t.src:'nero://'+(t.v==='tube'?'movies':t.v);
 const bar=$('#tabs');bar.innerHTML='';
@@ -428,10 +383,8 @@ t.v='site';t.src=v;t.u=v;t.title=h;let f=$('#f'+t.id),frame=proxyFrames.get(t.id
 if(!f){f=document.createElement('iframe');f.id='f'+t.id;f.className='sf';f.allow='fullscreen; autoplay; picture-in-picture';f.allowFullscreen=true;$('#sites').appendChild(f)}else{f.allow='fullscreen; autoplay; picture-in-picture';f.allowFullscreen=true}
 if(isDirectEmbedAddress(v)){
 proxyFrames.delete(t.id);t.direct=true;t.engine='direct';f.src=v;
-}else if(getProxyEngine()==='vanillia'){
-proxyFrames.delete(t.id);t.direct=false;t.engine='vanillia';f.src=makeVanilliaUrl(v);
 }else{
-if(t.direct||t.engine==='vanillia'||!frame){frame=controller.createFrame(f);proxyFrames.set(t.id,frame);t.direct=false}
+if(t.direct||!frame){frame=controller.createFrame(f);proxyFrames.set(t.id,frame);t.direct=false}
 t.engine='scramjet';frame.go(v);
 }
 f.title=h;draw()}
@@ -440,7 +393,6 @@ function isDirectEmbedAddress(raw){try{const u=new URL(/^https?:\/\//i.test(raw)
 function openUrl(raw,inPage){raw=(raw||'').trim();if(!raw)return;if(isYoutubeAddress(raw))raw='https://nero-tube.pages.dev/';const m=raw.match(/^nero:\/\/(\w+)/);if(m&&names[m[1]])return nav(m[1]==='movies'?'tube':m[1]);
 const v=norm(raw);
 if(isDirectEmbedAddress(v)){siteTab(v);return}
-if(getProxyEngine()==='vanillia'){checkVanilliaBackend().then(()=>siteTab(v)).catch(e=>toast('VanilliaPXY unavailable: '+e.message));return}
 initProxy().then(()=>siteTab(v)).catch(e=>toast(e.message))}
 $('#newtab').onclick=()=>newTab();
 $('#ext').onclick=()=>{const t=cT();if(t&&t.u)ext(t.u)};
@@ -465,18 +417,12 @@ const navButtons={};
 });
 $('#url').parentElement.insertBefore(navTools,$('#url'));
 proxyStatusEl=document.createElement('button');proxyStatusEl.type='button';proxyStatusEl.className='nero-proxy-status';proxyStatusEl.textContent='Proxy starting…';proxyStatusEl.style.cssText='flex:none;border:1px solid rgba(255,255,255,.12);background:rgba(255,255,255,.05);color:var(--muted,#aaa);border-radius:999px;padding:5px 9px;font:11px/1.2 inherit;white-space:nowrap;cursor:pointer';
-proxyStatusEl.onclick=()=>{if(getProxyEngine()==='vanillia'){checkVanilliaBackend().catch(e=>toast(e.message));return}if(proxyStatusEl.dataset.state==='error'||proxyStatusEl.dataset.state==='idle')initProxy().catch(e=>toast(e.message));};
+proxyStatusEl.onclick=()=>{if(proxyStatusEl.dataset.state==='error'||proxyStatusEl.dataset.state==='idle')initProxy().catch(e=>toast(e.message));};
 proxyStatusEl.dataset.state='pending';$('#url').parentElement.insertBefore(proxyStatusEl,$('#url'));
-syncProxyEngineSettings();
 function runNavAction(action){
   if(action==='home'){nav('home');return}
   const t=cT(),frame=t&&proxyFrames.get(t.id),iframe=t&&$('#f'+t.id);
   if(!t||t.v!=='site'||!iframe){toast('Open a website first');return}
-  if(t.engine==='vanillia'){
-    if(action==='reload'){iframe.src=makeVanilliaUrl(t.src);return}
-    toast('Use the website navigation controls for back and forward in VanilliaPXY');
-    return;
-  }
   try{
     if(action==='back')iframe.contentWindow.history.back();
     else if(action==='forward')iframe.contentWindow.history.forward();
