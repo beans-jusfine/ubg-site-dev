@@ -1,22 +1,14 @@
 /
-  Cache-Control: no-cache, no-store, must-revalidate
+  Cache-Control: no-cache, must-revalidate
 /index.html
-  Cache-Control: no-cache, no-store, must-revalidate
+  Cache-Control: no-cache, must-revalidate
 /app.html
-  Cache-Control: no-cache, no-store, must-revalidate
+  Cache-Control: no-cache, must-revalidate
 /config.js
-  Cache-Control: no-cache, no-store, must-revalidate
+  Cache-Control: no-cache, must-revalidate
 /js/*
-  Cache-Control: no-cache, no-store, must-revalidate
+  Cache-Control: no-cache, must-revalidate
 /css/*
-  Cache-Control: no-cache, no-store, must-revalidate
+  Cache-Control: no-cache, must-revalidate
 /sw.js
-  Cache-Control: no-cache, no-store, must-revalidate
-/scram/*
-  Cache-Control: no-cache, no-store, must-revalidate
-/controller/*
-  Cache-Control: no-cache, no-store, must-revalidate
-/utils/*
-  Cache-Control: no-cache, no-store, must-revalidate
-/epoxy/*
-  Cache-Control: no-cache, no-store, must-revalidate
+  Cache-Control: no-cache, must-revalidate

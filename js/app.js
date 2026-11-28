@@ -9,7 +9,31 @@ const isPlaceholder=u=>/YOUR-/.test(u);
 function show(v){$$('.view').forEach(e=>e.classList.toggle('on',e.id===(v==='games'?'games-view':v==='chat'?'chat-view':v)));$$('nav button[data-v]').forEach(b=>b.classList.toggle('on',b.dataset.v===v))}
 $$('nav button[data-v]').forEach(b=>b.onclick=()=>nav(b.dataset.v));
 let luminPromise=null,luminInitialized=false;
-function initLumin(){if(luminInitialized)return Promise.resolve();if(luminPromise)return luminPromise;luminPromise=new Promise((resolve,reject)=>{if(window.Lumin){try{window.Lumin.init({container:'#games',theme:'dark'});luminInitialized=true;resolve()}catch(e){reject(e)}return}const s=document.createElement('script');s.src='https://cdn.jsdelivr.net/gh/luminsdk/script@latest/lumin.min.js';s.async=true;s.onload=()=>{try{window.Lumin.init({container:'#games',theme:'dark'});luminInitialized=true;resolve()}catch(e){reject(e)}};s.onerror=()=>reject(new Error('Lumin games failed to load'));document.head.appendChild(s)});return luminPromise}
+async function initLumin(){
+  if(luminInitialized)return;
+  if(luminPromise)return luminPromise;
+  luminPromise=(async()=>{
+    if(!window.Lumin){
+      await new Promise((resolve,reject)=>{
+        const s=document.createElement('script');
+        s.src='https://cdn.jsdelivr.net/gh/luminsdk/script@latest/lumin.min.js';
+        s.async=true;
+        s.onload=resolve;
+        s.onerror=()=>reject(new Error('Lumin games failed to load. Check your connection and try again.'));
+        document.head.appendChild(s);
+      });
+    }
+    if(!window.Lumin||typeof window.Lumin.init!=='function')throw new Error('Lumin games SDK did not initialize correctly');
+    await window.Lumin.init({
+      container:'#games',
+      theme:'dark',
+      onError:error=>console.error('Lumin games error:',error)
+    });
+    luminInitialized=true;
+  })();
+  try{await luminPromise}
+  catch(error){luminPromise=null;luminInitialized=false;throw error}
+}
 
 function save(k,v){try{localStorage.setItem(k,v)}catch(e){}}
 function load(k){try{return localStorage.getItem(k)}catch(e){return null}}
@@ -396,7 +420,7 @@ if(isDirectEmbedAddress(v)){siteTab(v);return}
 initProxy().then(()=>siteTab(v)).catch(e=>toast(e.message))}
 $('#newtab').onclick=()=>newTab();
 $('#ext').onclick=()=>{const t=cT();if(t&&t.u)ext(t.u)};
-$('#url').onfocus=e=>e.target.select();$('#url').onkeydown=e=>{if(e.key==='Enter')openUrl(e.target.value)};
+$('#url').onfocus=e=>e.target.select();$('#url').onkeydown=e=>{if(e.key==='Enter'){e.preventDefault();e.stopPropagation();openUrl(e.target.value)}};
 
 const ICON={
 home:'house',games:'gamepad-2',settings:'settings',
@@ -481,7 +505,7 @@ renderShortcuts();
 // website does not have to pay the service-worker and Render startup cost.
 initProxy().catch(error=>setProxyStatus('Proxy offline','error',error?.message||'Click to retry the proxy connection'));
 
-$('#hs').onkeydown=e=>{const q=e.target.value.trim();if(e.key==='Enter'&&q)openUrl(q,true)};
+$('#hs').onkeydown=e=>{if(e.key!=='Enter')return;e.preventDefault();e.stopPropagation();const q=e.target.value.trim();if(q)openUrl(q,true)};
 
 let stop=null;
 function play(g){$('#ptitle').textContent=g.n;$('#phint').textContent=g.h;$('#stage').innerHTML='';$('#player').classList.add('on');stop=g.f($('#stage'))}
