@@ -36,7 +36,7 @@ const NERO_AERO_COLOR_KEY='nero.theme.aeroColor.v1';
 const NERO_THEMES=['default','aero-glass','mint','nord','amoled'];
 const neroThemeSelect=document.createElement('div');
 neroThemeSelect.className='grp nero-theme-settings';
-neroThemeSelect.innerHTML='<div class="gl">NERO theme</div><div class="row"><div>Theme<small>Choose the overall browser appearance</small></div><select id="nero-theme-select" aria-label="NERO theme"><option value="default">Default</option><option value="mint">Mint</option><option value="nord">Nord</option><option value="amoled">AMOLED</option><option value="aero-glass">Aero</option></select></div><div class="row" id="nero-aero-color-row"><div>Aero color<small>Choose the tint used by Windows Aero</small></div><select id="nero-aero-color" aria-label="Aero color"><option value="blue">Classic blue</option><option value="silver">Silver</option><option value="emerald">Emerald</option><option value="violet">Violet</option><option value="rose">Rose</option></select></div>';
+neroThemeSelect.innerHTML='<div class="gl">NERO theme</div><div class="row"><div>Theme<small>Choose the overall browser appearance</small></div><select id="nero-theme-select" aria-label="NERO theme"><option value="default">Default</option><option value="aero-glass">Windows Aero</option><option value="mint">Mint</option><option value="nord">Nord</option><option value="amoled">AMOLED</option></select></div><div class="row" id="nero-aero-color-row"><div>Aero color<small>Choose the tint used by Windows Aero</small></div><select id="nero-aero-color" aria-label="Aero color"><option value="blue">Classic blue</option><option value="silver">Silver</option><option value="emerald">Emerald</option><option value="violet">Violet</option><option value="rose">Rose</option></select></div>';
 tabCloakSet.insertBefore(neroThemeSelect,tabCloakSet.firstChild);
 const neroThemeControl=$('#nero-theme-select'),neroAeroColorControl=$('#nero-aero-color'),neroAeroColorRow=$('#nero-aero-color-row');
 function updateNeroThemeFavicon(){
@@ -50,7 +50,7 @@ function updateNeroThemeFavicon(){
 }
 function syncNeroMoviesTheme(theme=load(NERO_THEME_KEY)||'default',color=load(NERO_AERO_COLOR_KEY)||'blue'){
   const frame=$('#nero-movies-frame');
-  frame?.contentWindow?.postMessage({type:'NERO_THEME_SYNC',theme:NERO_THEMES.includes(theme)?theme:'default',color},'https://ubg-site-movies.pages.dev');
+  frame?.contentWindow?.postMessage({type:'NERO_THEME_SYNC',theme:theme==='aero-glass'?'aero-glass':'default',color},'https://ubg-site-movies.pages.dev');
 }
 $('#nero-movies-frame')?.addEventListener('load',()=>syncNeroMoviesTheme());
 function applyNeroTheme(theme,color,persist=true){
