@@ -11224,3 +11224,34 @@ body.global-chat-resizing{cursor:col-resize!important;user-select:none!important
 :root[data-nero-palette="amoled"] .shortcut,
 :root[data-nero-palette="amoled"] #player .box,
 :root[data-nero-palette="amoled"] .memory-panel{background:#050505;border-color:#191919}
+
+
+/* Make the Games tab use the active NERO palette rather than a fixed dark shell. */
+#games-view{color:var(--text);background:var(--bg)}
+#games{
+  color:var(--text);background:var(--panel);border:1px solid var(--line);
+  border-radius:16px;min-height:calc(100vh - 150px);
+}
+#games :is(button,a,[role="button"],input,select){color:inherit}
+:root[data-nero-palette="mint"] #games{
+  --games-glow:rgba(114,224,165,.12);
+  background:radial-gradient(ellipse at 85% 8%,var(--games-glow),transparent 48%),var(--panel);
+  border-color:var(--line);color:var(--text);
+}
+:root[data-nero-palette="mint"] #games :is(button,a,[role="button"]){
+  border-color:var(--line);accent-color:var(--acc);
+}
+:root[data-nero-palette="nord"] #games{
+  --games-glow:rgba(136,192,208,.12);
+  background:radial-gradient(ellipse at 85% 8%,var(--games-glow),transparent 48%),var(--panel);
+  border-color:var(--line);color:var(--text);
+}
+:root[data-nero-palette="nord"] #games :is(button,a,[role="button"]){
+  border-color:var(--line);accent-color:var(--acc);
+}
+:root[data-nero-palette="amoled"] #games{
+  background:#000;border-color:#191919;color:#f5f5f5;box-shadow:none;
+}
+:root[data-nero-palette="amoled"] #games :is(button,a,[role="button"]){
+  border-color:#242424;accent-color:var(--acc);
+}
